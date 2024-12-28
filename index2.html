@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kali Linux Tools</title>
+    <style>
+        /* تصميم الصفحة */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* تصميم الشريط العلوي */
+        .navbar {
+            background-color: #1e1e1e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d1b2;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .logo.clicked {
+            color: #ff0000; /* تغيير اللون إلى الأحمر عند الضغط */
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar ul li {
+            margin: 0 15px;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .navbar ul li a:hover {
+            color: #00d1b2;
+        }
+
+        /* تصميم الأدوات */
+        .tool {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .tool h2 {
+            color: #00d1b2;
+            cursor: pointer;
+            font-family: 'Helvetica', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .tool h2:hover {
+            color: #00ff00;
+        }
+
+        .tool-details {
+            display: none;
+            background-color: #444;
+            margin-top: 10px;
+            padding: 20px;
+            border-radius: 8px;
+            color: #d1e7e2;
+            font-family: 'Verdana', sans-serif;
+            line-height: 1.6;
+        }
+
+        .tool-details p {
+            font-size: 18px;
+            color: #b6d7a8;
+        }
+
+        .tool-details strong {
+            color: #ffcc00;
+        }
+
+        .tool-details ol,
+        .tool-details ul {
+            margin-left: 20px;
+        }
+
+        .tool-details li {
+            color: #f4f4f4;
+            margin-bottom: 8px;
+        }
+
+        .tool-details li:hover {
+            color: #ffeb3b;
+        }
+
+        .tool-details code {
+            background-color: #333;
+            color: #00d1b2;
+            padding: 5px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* تصميم التفاعل مع روابط مثل كالي لينكس */
+        .highlight {
+            color: #00d1b2;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .highlight:hover {
+            color: #ff0000;
+        }
+
+        /* إزالة الخط تحت الرابط */
+        .navbar .logo a {
+            text-decoration: none;
+        }
+
+        /* تصميم نموذج البحث */
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 20px;
+        }
+
+        .search-container input {
+            padding: 8px;
+            margin-right: 10px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #444;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .search-container button {
+            padding: 8px 16px;
+            background-color: #00d1b2;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #00ff00;
+        }
+
+        /* تصميم زر المساعدة */
+        .help-btn {
+            background-color: #00d1b2;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .help-btn:hover {
+            background-color: #00ff00;
+        }
+
+        /* تصميم نافذة المساعدة */
+        .help-popup {
+            background-color: #444;
+            color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            width: 300px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+        }
+
+        .help-popup button {
+            background-color: #ff0000;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .help-popup button:hover {
+            background-color: #ff7f7f;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الشريط العلوي -->
+    <div class="navbar">
+        <div class="logo" id="logo" onclick="redirectToTelegram()">
+            Kali Linux Tools
+        </div>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#tools">Tools</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#" id="helpButton">Help</a></li>
+        </ul>
+    </div>
+
+    <!-- نموذج البحث -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search for a tool...">
+        <button onclick="searchTool()">Search</button>
+    </div>
+
+    <div class="tool">
+    <h2 onclick="toggleDetails('metasploit')">Metasploit</h2>
+    <div id="metasploit" class="tool-details">
+        <p><strong>ما هي أداة Metasploit؟</strong></p>
+        <p>Metasploit هو إطار عمل للاختبار الأمني يستخدم لاستغلال الثغرات في أنظمة الكمبيوتر. يستخدمه المحترفون في مجال أمان الشبكات لاكتشاف الثغرات في الأنظمة والتطبيقات، واختبار مدى قوة الدفاعات الأمنية. Metasploit يحتوي على مجموعة من الأدوات التي تساعد في تحديد الثغرات، واختراق الأنظمة، بالإضافة إلى أنماط متعددة لاستغلال الثغرات المتوفرة.</p>
+
+        <p><strong>أهمية استخدام Metasploit:</strong></p>
+        <ul>
+            <li>اكتشاف الثغرات في الأنظمة والتطبيقات.</li>
+            <li>اختبار قوة الجدران النارية والأنظمة الأمنية.</li>
+            <li>مساعد في تنفيذ اختبارات الاختراق وتقديم تقارير عن الثغرات المكتشفة.</li>
+            <li>يساعد في تطوير أدوات استغلال جديدة وتحسين الأمان العام للأنظمة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Metasploit:</strong></p>
+        <ul>
+            <li><strong><code>msfconsole</code></strong>: هذا هو الأمر الأساسي لفتح واجهة سطر الأوامر الخاصة بـ Metasploit. عند تنفيذ هذا الأمر، ستتمكن من استخدام جميع الأدوات والأوامر المتوفرة في إطار Metasploit.</li>
+            <li><strong><code>use [module]</code></strong>: يستخدم هذا الأمر لاختيار وحدة معينة للعمل عليها. على سبيل المثال، لاختيار وحدة استغلال (exploit) معينة، يمكنك تنفيذ الأمر <code>use exploit/windows/smb/ms17_010_eternalblue</code>.</li>
+            <li><strong><code>set [option] [value]</code></strong>: يستخدم هذا الأمر لتحديد الإعدادات المطلوبة للوحدة التي اخترتها. على سبيل المثال، إذا كنت تستخدم أداة استغلال، يمكنك تحديد عنوان الـ IP الخاص بالهدف باستخدام الأمر <code>set RHOST 192.168.1.1</code>.</li>
+            <li><strong><code>show options</code></strong>: هذا الأمر يعرض جميع الخيارات المتاحة للوحدة التي تم اختيارها، مثل عناوين الـ IP، المنافذ، وأي معلمات أخرى مرتبطة بالاستغلال.</li>
+            <li><strong><code>run</code></strong> أو <strong><code>exploit</code></strong>: بعد تحديد الإعدادات المطلوبة، يستخدم هذا الأمر لتنفيذ الاستغلال. سيحاول الأداة اختراق الهدف باستخدام الثغرة المكتشفة.</li>
+            <li><strong><code>back</code></strong>: للخروج من الوحدة الحالية والعودة إلى القائمة الرئيسية لـ Metasploit.</li>
+            <li><strong><code>exit</code></strong>: للخروج من Metasploit تمامًا.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Metasploit:</strong></p>
+        <ul>
+            <li><code>msfconsole</code> - لفتح واجهة Metasploit.</li>
+            <li><code>use exploit/windows/smb/ms17_010_eternalblue</code> - لاختيار وحدة استغلال EternalBlue.</li>
+            <li><code>set RHOST 192.168.1.100</code> - لتحديد عنوان الـ IP للهدف.</li>
+            <li><code>set LHOST 192.168.1.1</code> - لتحديد عنوان الـ IP للكمبيوتر الهجومي (المهاجم).</li>
+            <li><code>exploit</code> - لتنفيذ الاستغلال ضد الهدف.</li>
+        </ul>
+
+        <p><strong>أنواع الوحدات في Metasploit:</strong></p>
+        <ul>
+            <li><strong>وحدات الاستغلال (Exploits):</strong> وهي الوحدات التي تستخدم الثغرات الموجودة في الأنظمة لاختراقها. مثل <code>exploit/windows/smb/ms17_010_eternalblue</code>.</li>
+            <li><strong>وحدات الاستماع (Listeners):</strong> وهي تستخدم للاستماع للاتصالات القادمة من الأنظمة المستهدفة بعد استغلالها. مثل <code>multi/handler</code>.</li>
+            <li><strong>وحدات التحميل (Payloads):</strong> هي الأكواد التي تُنفذ بعد استغلال الثغرة على النظام المستهدف، مثل <code>windows/x64/meterpreter/reverse_tcp</code>.</li>
+            <li><strong>وحدات المعلومات (Post Exploits):</strong> وهي تساعد في جمع معلومات بعد استغلال النظام، مثل <code>post/windows/gather/enum_logged_on_users</code>.</li>
+        </ul>
+
+        <p><strong>دليل خطوة بخطوة لاستخدام Metasploit:</strong></p>
+        <p>1. قم بتشغيل Metasploit باستخدام الأمر <code>msfconsole</code>.</p>
+        <p>2. اختر الوحدة التي تريد استخدامها، مثل وحدة الاستغلال <code>use exploit/windows/smb/ms17_010_eternalblue</code>.</p>
+        <p>3. حدد الإعدادات المطلوبة باستخدام الأمر <code>set</code>. على سبيل المثال، لتحديد عنوان الـ IP الخاص بالهدف <code>set RHOST 192.168.1.100</code>.</p>
+        <p>4. بمجرد تحديد جميع الخيارات، استخدم الأمر <code>exploit</code> لتنفيذ الاستغلال.</p>
+        <p>5. إذا تم نجاح الاستغلال، سيتمكن المستخدم من الوصول إلى النظام المستهدف.</p>
+
+        <p><strong>الأدوات الإضافية في Metasploit:</strong></p>
+        <ul>
+            <li><strong>Meterpreter:</strong> هو حمولة متقدمة تتيح لك التحكم الكامل في الجهاز المخترق، بما في ذلك القدرة على تنفيذ أوامر عن بعد، التقاط الصور، أو حتى إنشاء مفاتيح جديدة للوصول.</li>
+            <li><strong>Armitage:</strong> هو واجهة رسومية لــ Metasploit تساعد في تسهيل العمل على المستخدمين غير الخبراء، مما يتيح لهم استخدام الأدوات المتوفرة بشكل أسهل وأسرع.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب أن يتم استخدام Metasploit فقط في بيئات اختبارية أو مع الحصول على إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>يعتبر استخدام Metasploit لأغراض غير قانونية انتهاكًا للأخلاقيات وقد يؤدي إلى عواقب قانونية.</li>
+        </ul>
+    </div>
+</div>
+<div class="tool">
+    <h2 onclick="toggleDetails('nmap')">Nmap</h2>
+    <div id="nmap" class="tool-details">
+        <p><strong>ما هي أداة Nmap؟</strong></p>
+        <p>أداة Nmap (Network Mapper) هي أداة مفتوحة المصدر تُستخدم لفحص الشبكات واكتشاف الأجهزة المتصلة بها. تُستخدم بشكل رئيسي لتحديد الأجهزة المتصلة بالشبكة، والمسح عبر المنافذ المفتوحة، وتحديد الخدمات المُعتمدة على هذه المنافذ. Nmap يمكنه أيضًا اكتشاف النظام التشغيلي للأجهزة المتصلة عبر الشبكة، ويُعتبر من أهم الأدوات في اختبارات الأمان وتحليل الشبكات.</p>
+
+        <p><strong>أهمية استخدام Nmap:</strong></p>
+        <ul>
+            <li>اكتشاف الأجهزة المتصلة بالشبكة.</li>
+            <li>فحص المنافذ المفتوحة والخدمات المتاحة على الأجهزة.</li>
+            <li>تحليل الأمان واكتشاف الثغرات في الشبكة.</li>
+            <li>مساعد في إعداد تصحيحات الأمان وتحليل مستوى الأمان العام للشبكات.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Nmap:</strong></p>
+        <ul>
+            <li><strong><code>nmap [عنوان الـ IP]</code></strong>: هذا هو الأمر الأساسي الذي يتم استخدامه لفحص جهاز معين باستخدام عنوان الـ IP الخاص به. على سبيل المثال، <code>nmap 192.168.1.1</code>.</li>
+            <li><strong><code>nmap -sP [نطاق الـ IP]</code></strong>: لاكتشاف الأجهزة المتصلة ضمن نطاق معين من عناوين الـ IP. على سبيل المثال، يمكن استخدام الأمر <code>nmap -sP 192.168.1.0/24</code> لفحص نطاق من الشبكة.</li>
+            <li><strong><code>nmap -sV [عنوان الـ IP]</code></strong>: لاكتشاف المنافذ المفتوحة على الجهاز المستهدف بالإضافة إلى الخدمات التي تعمل عليها. هذا الأمر يوفر تفاصيل إضافية حول الإصدارات الخاصة بالخدمات التي تعمل على المنافذ المفتوحة.</li>
+            <li><strong><code>nmap -O [عنوان الـ IP]</code></strong>: لاكتشاف نظام التشغيل الذي يعمل عليه الجهاز المستهدف من خلال تحليل مجموعة من الخصائص الخاصة بالجهاز.</li>
+            <li><strong><code>nmap -A [عنوان الـ IP]</code></strong>: هذا أمر شامل يقوم بتنفيذ مسح شامل لكل شيء تقريبًا حول الجهاز المستهدف، بما في ذلك اكتشاف المنافذ، والخدمات، ونظام التشغيل، وجميع المعلومات المتاحة.</li>
+            <li><strong><code>nmap -p [رقم المنفذ]</code></strong>: لفحص منفذ معين أو مجموعة من المنافذ على الجهاز المستهدف. يمكن تحديد عدة منافذ باستخدام فاصلة، مثل <code>nmap -p 22,80,443 [عنوان الـ IP]</code>.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Nmap:</strong></p>
+        <ul>
+            <li><code>nmap 192.168.1.1</code> - لفحص جهاز معين باستخدام عنوان الـ IP الخاص به.</li>
+            <li><code>nmap -sP 192.168.1.0/24</code> - لاكتشاف الأجهزة المتصلة ضمن نطاق معين من عناوين الـ IP.</li>
+            <li><code>nmap -sV 192.168.1.1</code> - لاكتشاف الخدمات والإصدارات على المنافذ المفتوحة.</li>
+            <li><code>nmap -O 192.168.1.1</code> - لاكتشاف نظام التشغيل للجهاز المستهدف.</li>
+            <li><code>nmap -A 192.168.1.1</code> - للحصول على فحص شامل للجهاز المستهدف، بما في ذلك تحديد نظام التشغيل والخدمات المتاحة.</li>
+            <li><code>nmap -p 22,80,443 192.168.1.1</code> - لفحص المنافذ المحددة 22 (SSH)، 80 (HTTP)، و443 (HTTPS) على الجهاز المستهدف.</li>
+        </ul>
+
+        <p><strong>شرح أوامر Nmap المتقدمة:</strong></p>
+        <ul>
+            <li><strong><code>nmap -T4 [عنوان الـ IP]</code></strong>: يستخدم هذا الخيار لتحديد سرعة المسح. <code>T4</code> يعني فحصًا أسرع من المعتاد، بينما <code>T1</code> يكون فحصًا بطيئًا وآمنًا.</li>
+            <li><strong><code>nmap --script [script]</code></strong>: يمكن لـ Nmap استخدام نصوص معينة (scripts) لتنفيذ مهام معينة. على سبيل المثال، يمكنك استخدام الأمر <code>nmap --script vuln 192.168.1.1</code> لاكتشاف الثغرات المعروفة على الجهاز المستهدف.</li>
+            <li><strong><code>nmap -Pn [عنوان الـ IP]</code></strong>: هذا الخيار يعطل فحص اكتشاف الأجهزة المتصلة، مما يعني أنه لن يتوقف حتى إذا كان الجهاز المستهدف لا يستجيب للاستفسارات عن الأجهزة.</li>
+            <li><strong><code>nmap -sS [عنوان الـ IP]</code></strong>: هذا هو مسح المنافذ باستخدام تقنية "SYN scan" (أسرع وأكثر دقة) التي تكتشف المنافذ المفتوحة دون إتمام الاتصال.</li>
+        </ul>
+
+        <p><strong>أنواع الفحوصات المختلفة في Nmap:</strong></p>
+        <ul>
+            <li><strong>TCP SYN Scan (-sS):</strong> أسرع نوع من الفحوصات وأكثرها شيوعًا للكشف عن المنافذ المفتوحة.</li>
+            <li><strong>UDP Scan (-sU):</strong> لفحص المنافذ باستخدام بروتوكول UDP.</li>
+            <li><strong>Stealth Scan (-sS):</strong> مسح خفي للبحث عن المنافذ المفتوحة باستخدام حزم SYN فقط.</li>
+            <li><strong>TCP Connect Scan (-sT):</strong> يستخدم هذا النوع من الفحص لتأسيس اتصال كامل مع المنافذ المفتوحة للكشف عن الخدمات التي تعمل عليها.</li>
+            <li><strong>Aggressive Scan (-A):</strong> مسح شامل يتضمن العديد من الخيارات مثل اكتشاف النظام التشغيلي، وفحص المنافذ المفتوحة، واكتشاف النسخ المشتغلة من البرامج والخدمات.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Nmap فقط في بيئات اختبارية أو مع إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>يُعتبر استخدام Nmap على الأنظمة التي لا تملك إذنًا لاختبارها غير قانوني ويعاقب عليه القانون.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة SQLmap -->
+<div class="tool">
+    <h2 onclick="toggleDetails('sqlmap')">SQLmap</h2>
+    <div id="sqlmap" class="tool-details">
+        <p><strong>ما هي أداة SQLmap؟</strong></p>
+        <p>أداة SQLmap هي أداة مفتوحة المصدر تُستخدم لاكتشاف واختبار ثغرات حقن SQL في تطبيقات الويب. تساعد SQLmap في أتمتة عملية الكشف عن الثغرات واستغلالها في قواعد البيانات باستخدام تقنيات متعددة مثل حقن SQL التقليدي، وBlind SQL Injection، وTime-based Blind SQL Injection، وغيرها من الأساليب المتقدمة. يُعتبر SQLmap من الأدوات الأساسية في اختبارات الأمان لمراجعة تطبيقات الويب.</p>
+
+        <p><strong>أهمية استخدام SQLmap:</strong></p>
+        <ul>
+            <li>اكتشاف ثغرات حقن SQL في تطبيقات الويب.</li>
+            <li>اختبار الأمان في قواعد البيانات من خلال تقنيات متقدمة لاختراق أنظمة الويب.</li>
+            <li>أتمتة اختبارات الأمان، مما يسهل اكتشاف الثغرات في قواعد البيانات.</li>
+            <li>استخدام SQLmap للاستفادة من الثغرات المكتشفة في تنفيذ الأوامر أو تحميل البيانات.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في SQLmap:</strong></p>
+        <ul>
+            <li><strong><code>sqlmap -u [عنوان URL]</code></strong>: هذا هو الأمر الأساسي لاستخدام SQLmap لاكتشاف ثغرات حقن SQL في تطبيق ويب باستخدام URL معين. على سبيل المثال، <code>sqlmap -u "http://example.com/page?id=1"</code>.</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --dbs</code></strong>: لاكتشاف قواعد البيانات المتاحة على النظام المستهدف. يساعد هذا الأمر في تحديد قواعد البيانات التي يمكن استغلالها.</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --tables</code></strong>: لاكتشاف الجداول الموجودة في قاعدة البيانات المحددة بعد تحديد قاعدة البيانات باستخدام الأمر السابق.</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --dump</code></strong>: لاسترداد البيانات من الجداول التي تم اكتشافها في قاعدة البيانات المستهدفة. يمكن لهذا الأمر استخراج البيانات مثل أسماء المستخدمين وكلمات المرور.</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --risk=3 --level=5</code></strong>: لتحديد مستوى المخاطر والفحص المتقدم. يتم تحديد مستوى الفحص بواسطة الخيارات --risk (من 1 إلى 3) و--level (من 1 إلى 5).</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام SQLmap:</strong></p>
+        <ul>
+            <li><code>sqlmap -u "http://example.com/page?id=1"</code> - لاكتشاف ثغرات SQL في الصفحة المحددة باستخدام المعامل "id".</li>
+            <li><code>sqlmap -u "http://example.com/page?id=1" --dbs</code> - لاكتشاف قواعد البيانات على الموقع المستهدف.</li>
+            <li><code>sqlmap -u "http://example.com/page?id=1" --tables</code> - لاكتشاف الجداول في قاعدة البيانات.</li>
+            <li><code>sqlmap -u "http://example.com/page?id=1" --dump</code> - لاسترداد البيانات من الجداول المستهدفة في قاعدة البيانات.</li>
+            <li><code>sqlmap -u "http://example.com/page?id=1" --risk=3 --level=5</code> - لزيادة دقة الفحص من خلال تحديد مستوى الخطر والتفاصيل.</li>
+        </ul>
+
+        <p><strong>شرح أوامر SQLmap المتقدمة:</strong></p>
+        <ul>
+            <li><strong><code>sqlmap -u [عنوان URL] --tamper=[اسم سكربت]</code></strong>: يستخدم هذا الخيار لتجاوز الأنظمة الأمنية باستخدام سكربتات التلاعب (tamper scripts). على سبيل المثال، يمكن استخدام <code>sqlmap --tamper=between</code> لتجاوز بعض آليات الحماية مثل WAF.</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --technique=[technique]</code></strong>: لتحديد نوع حقن SQL الذي سيتم استخدامه. الأنواع الممكنة هي "B" (Blind), "T" (Time-based Blind), "E" (Error-based), "U" (Union-based), "S" (Stacked queries).</li>
+            <li><strong><code>sqlmap -u [عنوان URL] --cookie="[كوكي]"</code></strong>: لاستخدام كوكيز الجلسة الخاصة بك في اختبار التطبيق المستهدف.</li>
+        </ul>
+
+        <p><strong>أنواع اختبارات حقن SQL:</strong></p>
+        <ul>
+            <li><strong>Blind SQL Injection:</strong> يتم استخدام هذه التقنية عندما لا يتم عرض رسائل خطأ ولكن يمكن تحديد الثغرة عن طريق تحليل تغييرات في الاستجابة بناءً على الاستعلامات المرسلة.</li>
+            <li><strong>Error-based SQL Injection:</strong> يعتمد هذا النوع على استغلال الأخطاء التي تحدث في قاعدة البيانات عندما يكون الاستعلام غير صالح.</li>
+            <li><strong>Union-based SQL Injection:</strong> تستخدم هذه التقنية للدمج بين الاستعلامات لاستخراج البيانات المخزنة في قاعدة البيانات.</li>
+            <li><strong>Time-based Blind SQL Injection:</strong> تعتمد هذه التقنية على استخدام الوقت كأداة للكشف عن الثغرات عن طريق إرسال استعلامات تتسبب في تأخير الاستجابة بشكل متعمد.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام SQLmap فقط في بيئات اختبارية أو مع إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>يُعتبر استخدام SQLmap على الأنظمة التي لا تملك إذنًا لاختبارها غير قانوني ويعاقب عليه القانون.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Nikto -->
+<div class="tool">
+    <h2 onclick="toggleDetails('nikto')">Nikto</h2>
+    <div id="nikto" class="tool-details">
+        <p><strong>ما هي أداة Nikto؟</strong></p>
+        <p>أداة Nikto هي أداة مفتوحة المصدر تُستخدم لاكتشاف الثغرات في تطبيقات الويب. يمكن لـ Nikto فحص الخوادم بحثًا عن مئات من الثغرات المعروفة، بما في ذلك الثغرات في إعدادات الخادم، والبرمجيات القديمة، والهجمات الشائعة مثل حقن السكربتات عبر المواقع (XSS)، والهجمات عبر ملفات التكوين، والعديد من الثغرات الأمنية الأخرى.</p>
+
+        <p><strong>أهمية استخدام Nikto:</strong></p>
+        <ul>
+            <li>إجراء فحوصات شاملة للخوادم وتطبيقات الويب للكشف عن الثغرات الأمنية المعروفة.</li>
+            <li>الكشف عن إعدادات غير آمنة في الخوادم مثل الملفات المكشوفة أو الأخطاء في التكوين.</li>
+            <li>دعم فحص أكثر من 6.700 نوع من الثغرات المحتملة.</li>
+            <li>يُعتبر أداة مفيدة في التقييم الأمني والتحقيق في الهجمات المحتملة على الخوادم وتطبيقات الويب.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Nikto:</strong></p>
+        <ul>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL]</code></strong>: هذا هو الأمر الأساسي لاستخدام Nikto لفحص الخادم أو الموقع. على سبيل المثال، <code>nikto -h http://example.com</code> سيقوم بفحص الموقع للحصول على الثغرات.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -p [المنفذ]</code></strong>: لتحديد المنفذ الذي تريد فحصه على الخادم. على سبيل المثال، <code>nikto -h http://example.com -p 8080</code> لفحص الخادم على المنفذ 8080.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -Tuning [رقم]</code></strong>: لتحديد نوع الفحص الذي تريد إجراءه. الرقم يشير إلى الأنواع المختلفة من الفحوصات التي يمكنك اختيارها مثل فحص إعدادات الخادم أو تطبيقات الويب.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -o [اسم الملف]</code></strong>: لتحديد إخراج نتائج الفحص في ملف. هذا مفيد إذا كنت تريد حفظ النتائج لتحليل لاحق.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -C all</code></strong>: لتشغيل جميع فحوصات Nikto المتاحة بدون استثناء.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Nikto:</strong></p>
+        <ul>
+            <li><code>nikto -h http://example.com</code> - لفحص الخادم أو الموقع المخصص للثغرات الأمنية.</li>
+            <li><code>nikto -h http://example.com -p 8080</code> - لفحص الموقع على المنفذ 8080.</li>
+            <li><code>nikto -h http://example.com -Tuning 5</code> - لتحديد نوع الفحص المخصص على أساس الفئة 5 (مثل الكشف عن الثغرات المتعلقة بـ HTTP).</li>
+            <li><code>nikto -h http://example.com -o output.txt</code> - لحفظ نتائج الفحص في الملف "output.txt".</li>
+        </ul>
+
+        <p><strong>شرح أوامر Nikto المتقدمة:</strong></p>
+        <ul>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -no404</code></strong>: لتعطيل فحص وجود صفحات 404 (صفحات غير موجودة). يمكن أن يكون مفيدًا لتقليل الوقت في الفحص.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -ssl</code></strong>: لاستخدام بروتوكول SSL لفحص الخادم باستخدام HTTPS بدلاً من HTTP.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -proxy [عنوان البروكسي]</code></strong>: لاستخدام خادم وكيل (Proxy) أثناء فحص الخادم.</li>
+            <li><strong><code>nikto -h [عنوان الـ IP أو الـ URL] -useragent "[وكيل المستخدم]"</code></strong>: لاستخدام وكيل مستخدم مخصص أثناء الفحص لتخطي الحواجز مثل جدران الحماية أو الفلاتر.</li>
+        </ul>
+
+        <p><strong>أنواع الفحوصات التي يدعمها Nikto:</strong></p>
+        <ul>
+            <li><strong>فحص إعدادات الخادم:</strong> يتم فحص إعدادات الخادم مثل ملفات التكوين المكشوفة أو الاستغلالات المحتملة في الخادم.</li>
+            <li><strong>فحص الثغرات المعروفة:</strong> يتضمن فحصًا للثغرات المعروفة مثل تلك في برامج الخوادم مثل Apache وNginx وPHP وغيرها.</li>
+            <li><strong>فحص ملفات التكوين:</strong> يتم فحص وجود الملفات المكشوفة مثل ملفات التكوين الخاصة بالخوادم أو قواعد البيانات.</li>
+            <li><strong>فحص التطبيقات الشائعة:</strong> يشمل فحص تطبيقات الويب الشائعة مثل CMSs (أنظمة إدارة المحتوى) ونسخ البرمجيات التي قد تحتوي على ثغرات معروفة.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Nikto فقط في بيئات اختبارية أو مع إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>يُعتبر استخدام Nikto على الأنظمة التي لا تملك إذنًا لاختبارها غير قانوني ويعاقب عليه القانون.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Wireshark -->
+<div class="tool">
+    <h2 onclick="toggleDetails('wireshark')">Wireshark</h2>
+    <div id="wireshark" class="tool-details">
+        <p><strong>ما هي أداة Wireshark؟</strong></p>
+        <p>Wireshark هي أداة مفتوحة المصدر لتحليل الشبكات تُستخدم لمراقبة وتحليل البيانات المتدفقة عبر الشبكات. تمكن المستخدمين من مراقبة حركة المرور على الشبكة وفحص البروتوكولات المختلفة التي تعمل عبر الشبكة. تُعتبر Wireshark واحدة من أقوى الأدوات في مجال تحليل الشبكات وتُستخدم بشكل واسع لاكتشاف المشكلات الأمنية، اكتشاف الثغرات، وتحليل الحزم على الشبكة.</p>
+
+        <p><strong>أهمية استخدام Wireshark:</strong></p>
+        <ul>
+            <li>مراقبة وتحليل حركة البيانات عبر الشبكة.</li>
+            <li>تشخيص المشكلات الأمنية أو مشكلات الأداء في الشبكة.</li>
+            <li>التقاط وفحص الحزم المتبادلة بين الأجهزة على الشبكة.</li>
+            <li>مساعدة مسؤولي الشبكات في تصحيح وإصلاح المشكلات المتنوعة مثل الاتصال البطيء أو الاختناقات.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Wireshark:</strong></p>
+        <ul>
+            <li><strong><code>wireshark</code></strong>: هذا هو الأمر الأساسي لتشغيل Wireshark في بيئة سطر الأوامر. عند تشغيله، سيتم فتح واجهة المستخدم الرسومية لـ Wireshark.</li>
+            <li><strong><code>wireshark -i [interface]</code></strong>: يستخدم لتحديد واجهة الشبكة التي ترغب في مراقبتها. على سبيل المثال، <code>wireshark -i eth0</code> لمراقبة واجهة Ethernet.</li>
+            <li><strong><code>wireshark -k -i [interface]</code></strong>: يقوم بتشغيل Wireshark مع تمكين التسجيل الفوري لحركة البيانات عبر الشبكة مباشرة بعد بدء البرنامج.</li>
+            <li><strong><code>wireshark -f "[filter expression]"</code></strong>: لتطبيق مرشح على الحزم أثناء الاستماع إلى البيانات عبر الشبكة. على سبيل المثال، <code>wireshark -f "tcp port 80"</code> لاستعراض حركة المرور على المنفذ 80 (HTTP).</li>
+            <li><strong><code>wireshark -w [file_name]</code></strong>: لتسجيل حركة البيانات إلى ملف للرجوع إليه لاحقًا، مثل <code>wireshark -w capture.pcap</code>.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Wireshark:</strong></p>
+        <ul>
+            <li><code>wireshark -i eth0</code> - لمراقبة واجهة الشبكة "eth0".</li>
+            <li><code>wireshark -f "tcp port 443"</code> - لتحليل حركة المرور عبر المنفذ 443 (HTTPS).</li>
+            <li><code>wireshark -w capture.pcap</code> - لتسجيل حركة المرور في ملف باسم "capture.pcap" لتتمكن من تحليله لاحقًا.</li>
+            <li><code>wireshark -i wlan0 -k</code> - لبدء Wireshark على واجهة الشبكة اللاسلكية "wlan0" مع بدء التسجيل فورًا.</li>
+        </ul>
+
+        <p><strong>شرح أوامر Wireshark المتقدمة:</strong></p>
+        <ul>
+            <li><strong><code>wireshark -Y "[display filter]"</code></strong>: لاستخدام مرشح عرض أثناء تحليل البيانات المسجلة. مثلًا، <code>wireshark -Y "http"</code> لعرض الحزم التي تحتوي على بروتوكول HTTP.</li>
+            <li><strong><code>wireshark -z "[stats]"</code></strong>: لاستخراج إحصاءات معينة أثناء التحليل. مثلًا، <code>wireshark -z io,stat,0</code> لعرض إحصاءات تدفق البيانات.</li>
+            <li><strong><code>wireshark -p</code></strong>: لتشغيل Wireshark بدون وضع "promiscuous mode"، الذي يتيح للمستخدم التقاط الحزم من الشبكة حتى وإن لم يكن الجهاز مقصدًا لها.</li>
+        </ul>
+
+        <p><strong>مرشحات Wireshark:</strong></p>
+        <ul>
+            <li><strong>المرشح على مستوى الحزم:</strong> <code>ip.addr == 192.168.1.1</code> لعرض الحزم التي تتعلق بعنوان IP معين.</li>
+            <li><strong>مرشح البروتوكولات:</strong> <code>tcp</code> لعرض الحزم المتعلقة بالبروتوكول TCP فقط.</li>
+            <li><strong>مرشح المنفذ:</strong> <code>tcp.port == 80</code> لعرض الحزم التي تستخدم المنفذ 80 (HTTP).</li>
+            <li><strong>مرشح الحزم المشفرة:</strong> <code>ssl</code> لعرض الحزم التي تتضمن بروتوكول SSL (لتحديد حركة مرور HTTPS المشفرة).</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب أن يكون لديك إذن لاستخدام Wireshark على الشبكة التي تقوم بمراقبتها، لأن مراقبة البيانات من دون إذن قد تكون غير قانونية.</li>
+            <li>يجب على المستخدم أن يكون حذرًا عند التعامل مع الحزم الملتقطة، لأنها قد تحتوي على معلومات حساسة.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Burp Suite -->
+<div class="tool">
+    <h2 onclick="toggleDetails('burpsuite')">Burp Suite</h2>
+    <div id="burpsuite" class="tool-details">
+        <p><strong>ما هي أداة Burp Suite؟</strong></p>
+        <p>Burp Suite هي مجموعة من الأدوات القوية التي تُستخدم لاختبار أمان تطبيقات الويب. تُعتبر واحدة من أكثر الأدوات شيوعًا في مجال اختبار الاختراق، حيث توفر مجموعة شاملة من الأدوات لاكتشاف الثغرات الأمنية مثل حقن SQL، XSS، وغيرها من الثغرات الشائعة في تطبيقات الويب.</p>
+
+        <p><strong>أهمية استخدام Burp Suite:</strong></p>
+        <ul>
+            <li>مساعد في اكتشاف الثغرات الأمنية في تطبيقات الويب.</li>
+            <li>فحص ومراقبة طلبات واستجابات HTTP/HTTPS.</li>
+            <li>إجراء اختبارات اختراق شاملة على تطبيقات الويب لتحليل الأمان.</li>
+            <li>توفر واجهة مستخدم رسومية مع أدوات متكاملة لفحص وتحليل تطبيقات الويب بشكل فعال.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Burp Suite:</strong></p>
+        <ul>
+            <li><strong><code>burpsuite</code></strong>: الأمر الأساسي لبدء تشغيل Burp Suite من سطر الأوامر.</li>
+            <li><strong><code>burpsuite --project-file [file]</code></strong>: لتشغيل Burp Suite مع تحميل مشروع معين. على سبيل المثال، <code>burpsuite --project-file test_project</code>.</li>
+            <li><strong><code>burpsuite --headless</code></strong>: لتشغيل Burp Suite بدون واجهة المستخدم الرسومية (وضع الخوادم فقط).</li>
+            <li><strong><code>burpsuite --config-file [file]</code></strong>: لاستخدام ملف إعدادات مخصص عند بدء تشغيل الأداة.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Burp Suite:</strong></p>
+        <ul>
+            <li><code>burpsuite</code> - لبدء الأداة بشكل افتراضي مع واجهة المستخدم الرسومية.</li>
+            <li><code>burpsuite --project-file test_project</code> - لتحميل مشروع معين عند بدء الأداة.</li>
+            <li><code>burpsuite --headless</code> - لتشغيل Burp Suite في وضع بدون واجهة رسومية، مما يمكن استخدامه في البيئات الخوادم أو أثناء الأتمتة.</li>
+            <li><code>burpsuite --config-file my_config.json</code> - لتشغيل الأداة مع ملف إعدادات مخصص.</li>
+        </ul>
+
+        <p><strong>أدوات Burp Suite الأساسية:</strong></p>
+        <ul>
+            <li><strong>Proxy:</strong> يسمح للمستخدم باعتراض وتعديل طلبات واستجابات HTTP/HTTPS بين المتصفح والخادم. تُستخدم هذه الأداة لاختبار ثغرات مثل SQL Injection و Cross-Site Scripting (XSS).</li>
+            <li><strong>Spider:</strong> أداة الزحف التي تقوم بمسح تطبيق الويب لاكتشاف الروابط المختلفة والصفحات المخبأة داخل الموقع.</li>
+            <li><strong>Scanner:</strong> أداة فحص الأمان التي تساعد في اكتشاف الثغرات الأمنية مثل XSS و SQL Injection.</li>
+            <li><strong>Intruder:</strong> أداة تستخدم للهجوم على التطبيقات لاكتشاف الثغرات عن طريق إرسال مجموعة متنوعة من المدخلات تلقائيًا.</li>
+            <li><strong>Repeater:</strong> تُستخدم لإعادة إرسال نفس الطلبات HTTP مع تعديلات على المدخلات لاختبار كيفية استجابة التطبيق.</li>
+            <li><strong>Decoder:</strong> أداة لتحليل البيانات المشفرة وتفكيكها مثل JSON أو Base64 أو Hexadecimal.</li>
+        </ul>
+
+        <p><strong>شرح بعض الميزات المتقدمة في Burp Suite:</strong></p>
+        <ul>
+            <li><strong>منطقة الواجهة الخلفية (Back-End Interface):</strong> توفر Burp Suite القدرة على تكوين إعدادات متقدمة وتهيئة العمل مع أدوات أخرى مثل Nmap و Hydra لاختبار أمان التطبيقات.</li>
+            <li><strong>الفحص التلقائي (Automated Scanning):</strong> تتيح Burp Suite للمستخدم إجراء فحص تلقائي لاكتشاف الثغرات مثل XSS و SQL Injection في تطبيقات الويب.</li>
+            <li><strong>إعدادات الهجوم المتقدمة:</strong> تحتوي Burp Suite على خيارات لاختبار استغلال الثغرات الأمنية بطريقة آلية أو يدوية باستخدام التقنيات المختلفة.</li>
+            <li><strong>تدفق HTTP/S:</strong> يسمح للمستخدم باعتراض وتعديل تدفق البيانات بين المتصفح والخادم مع القدرة على فحص استجابات الطلبات بشكل دقيق.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب أن يكون لديك إذن لاختبار تطبيقات الويب باستخدام Burp Suite، لأن استخدامها بدون إذن يعد غير قانوني.</li>
+            <li>Burp Suite هي أداة قوية جدًا، ويجب استخدامها بحذر لتجنب اختراق الأنظمة غير المصرح بها.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Hydra -->
+<div class="tool">
+    <h2 onclick="toggleDetails('hydra')">Hydra</h2>
+    <div id="hydra" class="tool-details">
+        <p><strong>ما هي أداة Hydra؟</strong></p>
+        <p>أداة Hydra (أو THC-Hydra) هي أداة مفتوحة المصدر تُستخدم لاختبار قوة كلمات المرور عن طريق محاكاة هجمات القاموس على البروتوكولات المختلفة مثل SSH، FTP، HTTP، Telnet، وغيرها. تُعتبر Hydra من الأدوات المفضلة في اختبار الاختراق لاختراق كلمات المرور واستهداف الخوادم أو التطبيقات باستخدام تقنيات هجوم القاموس أو القوة الغاشمة.</p>
+
+        <p><strong>أهمية استخدام Hydra:</strong></p>
+        <ul>
+            <li>إجراء هجمات القوة الغاشمة أو القاموس لاختراق كلمات المرور على بروتوكولات مختلفة.</li>
+            <li>إجراء اختبارات اختراق على الخدمات التي تعتمد على كلمات المرور مثل SSH و FTP و HTTP وغيرها.</li>
+            <li>مساعد في تقييم قوة الأمان لكلمات المرور المستخدَمة في الأنظمة والخدمات.</li>
+            <li>سريع وفعّال في محاكاة هجمات متعددة على خوادم مختلفة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Hydra:</strong></p>
+        <ul>
+            <li><strong><code>hydra -l [اسم المستخدم] -P [قائمة كلمات المرور] [البروتوكول]://[عنوان الـ IP]</code></strong>: هذا هو الأمر الأساسي لاستخدام Hydra لاختراق حسابات مستخدمين على بروتوكول معين باستخدام قائمة كلمات مرور. على سبيل المثال، <code>hydra -l root -P /path/to/passwordlist.txt ssh://192.168.1.1</code>.</li>
+            <li><strong><code>hydra -L [قائمة المستخدمين] -P [قائمة كلمات المرور] [البروتوكول]://[عنوان الـ IP]</code></strong>: لاختراق حسابات متعددة باستخدام قائمة من المستخدمين وقائمة كلمات مرور. على سبيل المثال، <code>hydra -L users.txt -P /path/to/passwordlist.txt ssh://192.168.1.1</code>.</li>
+            <li><strong><code>hydra -t [عدد المحاولات المتوازية] -l [اسم المستخدم] -P [قائمة كلمات المرور] [البروتوكول]://[عنوان الـ IP]</code></strong>: لتحديد عدد المحاولات المتوازية. يمكن استخدامه لتسريع عملية الاختراق. على سبيل المثال، <code>hydra -t 4 -l root -P /path/to/passwordlist.txt ssh://192.168.1.1</code>.</li>
+            <li><strong><code>hydra -vV -l [اسم المستخدم] -P [قائمة كلمات المرور] [البروتوكول]://[عنوان الـ IP]</code></strong>: لاستخدام الوضع التفصيلي لمتابعة العمليات بشكل دقيق.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Hydra:</strong></p>
+        <ul>
+            <li><code>hydra -l root -P /path/to/passwordlist.txt ssh://192.168.1.1</code> - لاختراق حساب "root" على جهاز باستخدام SSH باستخدام قائمة كلمات مرور معينة.</li>
+            <li><code>hydra -L users.txt -P /path/to/passwordlist.txt ftp://192.168.1.1</code> - لاختراق حسابات مستخدمين متعددة باستخدام قائمة كلمات مرور عبر بروتوكول FTP.</li>
+            <li><code>hydra -t 4 -l admin -P /path/to/passwordlist.txt http://192.168.1.1</code> - لاختراق حساب "admin" على جهاز باستخدام بروتوكول HTTP مع محاولات متوازية 4.</li>
+            <li><code>hydra -vV -l testuser -P /path/to/passwordlist.txt telnet://192.168.1.1</code> - لاستخدام الوضع التفصيلي لاختراق حساب "testuser" عبر بروتوكول Telnet.</li>
+        </ul>
+
+        <p><strong>أنواع البروتوكولات المدعومة من Hydra:</strong></p>
+        <ul>
+            <li>SSH</li>
+            <li>FTP</li>
+            <li>Telnet</li>
+            <li>HTTP/HTTPS</li>
+            <li>SMTP</li>
+            <li>RDP</li>
+            <li>VNC</li>
+            <li>MySQL</li>
+            <li>PostgreSQL</li>
+            <li> وغيرها من البروتوكولات الشائعة.</li>
+        </ul>
+
+        <p><strong>الميزات المتقدمة في Hydra:</strong></p>
+        <ul>
+            <li><strong>دعم البرتوكولات المتعددة:</strong> Hydra تدعم العديد من البروتوكولات وتسمح بتنفيذ هجمات على مجموعة واسعة من الخدمات.</li>
+            <li><strong>الدعم للهجوم المتوازي:</strong> يمكن لـ Hydra إجراء هجمات متوازية باستخدام خيارات متعددة لتحسين الأداء.</li>
+            <li><strong>دعم قائمة كلمات المرور:</strong> يمكن استخدام قائمة من كلمات المرور (قاموس) لاختبارها ضد الحسابات المستهدفة.</li>
+            <li><strong>تسجيل جميع المحاولات:</strong> يمكن لـ Hydra حفظ جميع المحاولات ونتائج الهجوم في ملف سجل لمراجعتها لاحقًا.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Hydra فقط في بيئات اختبارية أو مع إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>استخدام Hydra لاختراق الأنظمة بدون إذن يعد غير قانوني ويعرضك للمسائلة القانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة John the Ripper -->
+<div class="tool">
+    <h2 onclick="toggleDetails('john')">John the Ripper</h2>
+    <div id="john" class="tool-details">
+        <p><strong>ما هي أداة John the Ripper؟</strong></p>
+        <p>أداة **John the Ripper** هي أداة مفتوحة المصدر تُستخدم لاختراق كلمات المرور عن طريق هجوم القوة الغاشمة، القاموس، أو الهجمات الهجينة. تم تصميمها لاختبار قوة كلمات المرور عبر الأنظمة المختلفة، وتدعم العديد من تنسيقات كلمات المرور مثل MD5، SHA-1، SHA-256، NTLM، و LM وغيرها.</p>
+
+        <p><strong>أهمية استخدام John the Ripper:</strong></p>
+        <ul>
+            <li>إجراء هجمات القوة الغاشمة أو القاموس لاختراق كلمات المرور.</li>
+            <li>استخدامها لاختبار كلمات المرور المخزنة في أنظمة مختلفة مثل Windows، Linux، وUnix.</li>
+            <li>دعم العديد من الخوارزميات لتنفيذ الهجمات على كلمات المرور.</li>
+            <li>أداة قوية وفعالة لاختبار قوة كلمات المرور المستخدمة في الأنظمة المختلفة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في John the Ripper:</strong></p>
+        <ul>
+            <li><strong><code>john [اسم الملف]</code></strong>: هذا هو الأمر الأساسي لاستخدام John the Ripper لاختراق كلمات المرور في الملف المحدد، مثل <code>john hashes.txt</code> لاختراق كلمات المرور المخزنة في ملف `hashes.txt`.</li>
+            <li><strong><code>john --wordlist=[مسار القاموس] [اسم الملف]</code></strong>: لاستخدام ملف قاموس مخصص بدلاً من القاموس الافتراضي. على سبيل المثال، <code>john --wordlist=/path/to/wordlist.txt hashes.txt</code>.</li>
+            <li><strong><code>john --rules [اسم الملف]</code></strong>: لاستخدام قواعد متقدمة أثناء الهجوم على كلمات المرور، مثل القاموس المخصص وقواعد تعديل كلمات المرور.</li>
+            <li><strong><code>john --incremental [اسم الملف]</code></strong>: لاستخدام الهجوم العشوائي (الذي يقوم بتجربة كل التركيبات الممكنة) لاختراق كلمات المرور.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام John the Ripper:</strong></p>
+        <ul>
+            <li><code>john hashes.txt</code> - لاختراق كلمات المرور المخزنة في ملف `hashes.txt` باستخدام القاموس الافتراضي.</li>
+            <li><code>john --wordlist=/path/to/wordlist.txt hashes.txt</code> - لاستخدام قاموس مخصص لاختراق كلمات المرور.</li>
+            <li><code>john --rules hashes.txt</code> - لاستخدام القواعد أثناء الهجوم على كلمات المرور لتحسين فرص نجاح الاختراق.</li>
+            <li><code>john --incremental hashes.txt</code> - لاستخدام الهجوم العشوائي لاختراق كلمات المرور باستخدام جميع التركيبات الممكنة.</li>
+        </ul>
+
+        <p><strong>الميزات المتقدمة في John the Ripper:</strong></p>
+        <ul>
+            <li><strong>دعم العديد من خوارزميات التجزئة:</strong> يدعم John the Ripper العديد من الخوارزميات مثل MD5، SHA-1، SHA-256، NTLM، وغيرها من التنسيقات الشهيرة.</li>
+            <li><strong>الهجوم العشوائي:</strong> يمكن لـ John استخدام الهجوم العشوائي (Incremental Mode) لمحاولة كل التركيبات الممكنة لكلمة المرور.</li>
+            <li><strong>دعم القواميس وقواعد تعديل كلمات المرور:</strong> يمكن استخدام قاموس مخصص مع قواعد تعديل على كلمات المرور لتغطية مجموعة واسعة من الاحتمالات.</li>
+            <li><strong>الاستئناف من حيث توقفت:</strong> في حال تم إيقاف الهجوم لأي سبب، يمكن استئناف العملية باستخدام ملف الحالة.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات المدعومة في John the Ripper:</strong></p>
+        <ul>
+            <li><strong>الهجوم القاموسي (Dictionary Attack):</strong> هذا هو الهجوم التقليدي الذي يستخدم قائمة كلمات مرور معينة للاختراق.</li>
+            <li><strong>الهجوم العشوائي (Brute Force Attack):</strong> هذا الهجوم يعتمد على محاولة كل التركيبات الممكنة لكلمة المرور.</li>
+            <li><strong>الهجوم الهجين (Hybrid Attack):</strong> يجمع بين الهجوم القاموسي والهجوم العشوائي عن طريق تطبيق قواعد على القاموس المستخدم.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام John the Ripper فقط في بيئات اختبارية أو مع إذن من مالكي الأنظمة المستهدفة.</li>
+            <li>استخدام John the Ripper لاختراق الأنظمة بدون إذن يعد غير قانوني ويعرضك للمسائلة القانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Aircrack-ng -->
+<div class="tool">
+    <h2 onclick="toggleDetails('aircrack')">Aircrack-ng</h2>
+    <div id="aircrack" class="tool-details">
+        <p><strong>ما هي أداة Aircrack-ng؟</strong></p>
+        <p>أداة **Aircrack-ng** هي مجموعة من الأدوات المفتوحة المصدر التي تُستخدم لاختبار أمان الشبكات اللاسلكية، خاصة الشبكات التي تعتمد على بروتوكولات WEP و WPA/WPA2. تُستخدم Aircrack-ng لاختراق كلمات مرور الشبكات اللاسلكية من خلال جمع الحزم وتحليلها.</p>
+
+        <p><strong>أهمية استخدام Aircrack-ng:</strong></p>
+        <ul>
+            <li>اختبار أمان الشبكات اللاسلكية وكلمات مرورها.</li>
+            <li>جمع الحزم من الشبكات اللاسلكية لزيادة فرصة نجاح الهجوم.</li>
+            <li>كسر كلمات مرور WEP و WPA/WPA2 باستخدام تقنيات متقدمة مثل هجوم القاموس وهجوم القوة الغاشمة.</li>
+            <li>تحليل الشبكات اللاسلكية وتقديم تقارير حول الأمان.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Aircrack-ng:</strong></p>
+        <ul>
+            <li><strong><code>airmon-ng start [الواجهة]</code></strong>: لتفعيل وضع المراقبة على بطاقة الشبكة اللاسلكية. على سبيل المثال، <code>airmon-ng start wlan0</code>.</li>
+            <li><strong><code>airodump-ng [الواجهة]</code></strong>: لاكتشاف الشبكات اللاسلكية المتاحة في المنطقة المحيطة. على سبيل المثال، <code>airodump-ng wlan0mon</code>.</li>
+            <li><strong><code>airodump-ng --bssid [عنوان الـ BSSID] -c [رقم القناة] [الواجهة]</code></strong>: لمراقبة قناة معينة لشبكة لاسلكية مستهدفة. على سبيل المثال، <code>airodump-ng --bssid 00:14:22:01:23:45 -c 6 wlan0mon</code>.</li>
+            <li><strong><code>aircrack-ng [ملف الحزم]</code></strong>: لاستخدام Aircrack-ng لكسر كلمة مرور شبكة لاسلكية باستخدام الحزم الملتقطة. على سبيل المثال، <code>aircrack-ng capture.cap</code>.</li>
+            <li><strong><code>airmon-ng stop [الواجهة]</code></strong>: لإيقاف وضع المراقبة على بطاقة الشبكة. على سبيل المثال، <code>airmon-ng stop wlan0mon</code>.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Aircrack-ng:</strong></p>
+        <ul>
+            <li><code>airmon-ng start wlan0</code> - لتمكين وضع المراقبة على بطاقة الشبكة اللاسلكية.</li>
+            <li><code>airodump-ng wlan0mon</code> - لاكتشاف الشبكات اللاسلكية في المنطقة المحيطة.</li>
+            <li><code>airodump-ng --bssid 00:14:22:01:23:45 -c 6 wlan0mon</code> - لمراقبة قناة معينة لشبكة لاسلكية مستهدفة.</li>
+            <li><code>aircrack-ng capture.cap</code> - لاختراق كلمة مرور شبكة لاسلكية باستخدام الحزم الملتقطة.</li>
+        </ul>
+
+        <p><strong>الميزات المتقدمة في Aircrack-ng:</strong></p>
+        <ul>
+            <li><strong>تحليل الحزم:</strong> يمكن لـ Aircrack-ng تحليل الحزم الملتقطة على الشبكة واستخدامها في عمليات كسر كلمة المرور.</li>
+            <li><strong>دعم WEP و WPA/WPA2:</strong> تدعم الأداة الهجوم على شبكات لاسلكية تستخدم بروتوكولات WEP و WPA/WPA2.</li>
+            <li><strong>التقاط الحزم:</strong> يمكن لـ Airodump-ng التقاط الحزم من الشبكات اللاسلكية المستهدفة لزيادة فرص النجاح في كسر كلمة المرور.</li>
+            <li><strong>دعم هجمات القاموس والقوة الغاشمة:</strong> تدعم الأداة هجمات القاموس والقوة الغاشمة لاختراق كلمات مرور الشبكات اللاسلكية.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات المدعومة في Aircrack-ng:</strong></p>
+        <ul>
+            <li><strong>هجوم القاموس (Dictionary Attack):</strong> يستخدم هذا الهجوم قاموسًا من كلمات المرور المحتملة لاختراق كلمة مرور الشبكة.</li>
+            <li><strong>هجوم القوة الغاشمة (Brute Force Attack):</strong> هذا الهجوم يحاول كل التركيبات الممكنة لكلمة المرور.</li>
+            <li><strong>هجوم WPS (WPS Attack):</strong> يمكن استخدام هذا الهجوم لاختراق كلمات مرور WPA باستخدام بروتوكول WPS.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Aircrack-ng فقط في بيئات اختبارية أو مع إذن من مالكي الشبكات المستهدفة.</li>
+            <li>استخدام Aircrack-ng لاختراق الشبكات بدون إذن يعتبر غير قانوني ويعرضك للمسائلة القانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Tcpdump -->
+<div class="tool">
+    <h2 onclick="toggleDetails('tcpdump')">Tcpdump</h2>
+    <div id="tcpdump" class="tool-details">
+        <p><strong>ما هي أداة Tcpdump؟</strong></p>
+        <p>أداة **Tcpdump** هي أداة مفتوحة المصدر تُستخدم في تحليل الشبكات ورصد الحزم المرسلة عبر الشبكة. تُستخدم Tcpdump لالتقاط وتحليل الحزم المارة عبر الشبكة، مما يساعد في مراقبة حركة البيانات وتشخيص مشكلات الشبكة. تُعتبر هذه الأداة من أدوات الفحص المتقدمة وتُستخدم بشكل رئيسي في الشبكات للكشف عن الأنشطة المشبوهة، والتحقق من أداء الشبكة، وفحص البروتوكولات المختلفة.</p>
+
+        <p><strong>أهمية استخدام Tcpdump:</strong></p>
+        <ul>
+            <li>التقاط الحزم المارة عبر الشبكة لتحليل حركة البيانات.</li>
+            <li>مراقبة الشبكة للكشف عن الأنشطة المشبوهة مثل محاولات الاختراق.</li>
+            <li>فحص البروتوكولات المختلفة مثل TCP، UDP، ICMP وغيرها.</li>
+            <li>مساعد في تشخيص مشكلات الشبكة وتحليل الأداء.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Tcpdump:</strong></p>
+        <ul>
+            <li><strong><code>tcpdump</code></strong>: هذا هو الأمر الأساسي لاستخدام Tcpdump لبدء التقاط الحزم على جميع الواجهات. على سبيل المثال، <code>tcpdump</code> لالتقاط الحزم على الشبكة.</li>
+            <li><strong><code>tcpdump -i [الواجهة]</code></strong>: لتحديد الواجهة التي سيتم التقاط الحزم منها. على سبيل المثال، <code>tcpdump -i eth0</code> لالتقاط الحزم من الواجهة eth0.</li>
+            <li><strong><code>tcpdump -n</code></strong>: هذا الخيار يُستخدم لعرض عناوين الـ IP بدلاً من أسماء المضيفين أثناء التقاط الحزم.</li>
+            <li><strong><code>tcpdump -v</code></strong>: لعرض تفاصيل إضافية حول الحزم الملتقطة.</li>
+            <li><strong><code>tcpdump -w [اسم الملف]</code></strong>: لحفظ الحزم الملتقطة في ملف معين لاستخدامه لاحقًا. على سبيل المثال، <code>tcpdump -w capture.pcap</code> لحفظ الحزم في ملف capture.pcap.</li>
+            <li><strong><code>tcpdump -r [اسم الملف]</code></strong>: لقراءة وتحليل الحزم من ملف سابق تم حفظه باستخدام الخيار <code>-w</code>. على سبيل المثال، <code>tcpdump -r capture.pcap</code>.</li>
+            <li><strong><code>tcpdump [خيار الفلترة]</code></strong>: يمكن إضافة خيارات للفلترة لتحديد نوع الحزم المراد التقاطها. مثلًا، <code>tcpdump port 80</code> لالتقاط الحزم التي تمر عبر منفذ 80 (HTTP).</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Tcpdump:</strong></p>
+        <ul>
+            <li><code>tcpdump</code> - لبدء التقاط الحزم عبر جميع الواجهات.</li>
+            <li><code>tcpdump -i eth0</code> - لالتقاط الحزم على الواجهة eth0.</li>
+            <li><code>tcpdump -n</code> - لعرض عناوين الـ IP بدلاً من أسماء المضيفين.</li>
+            <li><code>tcpdump -v</code> - لعرض تفاصيل إضافية حول الحزم.</li>
+            <li><code>tcpdump -w capture.pcap</code> - لحفظ الحزم الملتقطة في ملف باسم capture.pcap.</li>
+            <li><code>tcpdump -r capture.pcap</code> - لقراءة وتحليل الحزم من ملف capture.pcap.</li>
+            <li><code>tcpdump port 80</code> - لالتقاط الحزم عبر المنفذ 80 (HTTP).</li>
+        </ul>
+
+        <p><strong>الميزات المتقدمة في Tcpdump:</strong></p>
+        <ul>
+            <li><strong>الفلترة المتقدمة:</strong> يمكن لـ Tcpdump فلترة الحزم الملتقطة بناءً على البروتوكول، العنوان، المنفذ، أو حتى محتوى الحزمة.</li>
+            <li><strong>دعم بروتوكولات متعددة:</strong> تدعم الأداة التقاط وتحليل العديد من البروتوكولات مثل TCP، UDP، ICMP، ARP، وIP.</li>
+            <li><strong>حفظ وتحليل الحزم:</strong> يمكن حفظ الحزم الملتقطة في ملف من نوع <code>.pcap</code> لاستخدامها لاحقًا في أدوات تحليل أخرى مثل Wireshark.</li>
+            <li><strong>التحليل التفصيلي:</strong> يمكن عرض التفاصيل الدقيقة للحزم الملتقطة مثل حجم الحزمة، العناوين، المنافذ، وأوقات الوصول.</li>
+        </ul>
+
+        <p><strong>أنواع الفلاتر المتاحة في Tcpdump:</strong></p>
+        <ul>
+            <li><strong>فلترة على أساس البروتوكول:</strong> مثلًا، <code>tcpdump tcp</code> لالتقاط الحزم باستخدام بروتوكول TCP فقط.</li>
+            <li><strong>فلترة على أساس المنفذ:</strong> مثلًا، <code>tcpdump port 80</code> لالتقاط الحزم عبر المنفذ 80 (HTTP).</li>
+            <li><strong>فلترة على أساس العنوان:</strong> مثلًا، <code>tcpdump host 192.168.1.1</code> لالتقاط الحزم المتوجهة إلى أو من عنوان الـ IP 192.168.1.1.</li>
+            <li><strong>فلترة على أساس نوع الحزمة:</strong> مثلًا، <code>tcpdump icmp</code> لالتقاط حزم ICMP (التي تستخدم في الـ Ping).</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Tcpdump فقط في بيئات اختبارية أو مع إذن من مالكي الشبكات المستهدفة.</li>
+            <li>استخدام Tcpdump لاكتشاف الأنشطة المشبوهة على الشبكات غير المصرح بها يُعتبر غير قانوني ويعرضك للمسائلة القانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Ettercap -->
+<div class="tool">
+    <h2 onclick="toggleDetails('ettercap')">Ettercap</h2>
+    <div id="ettercap" class="tool-details">
+        <p><strong>ما هي أداة Ettercap؟</strong></p>
+        <p>أداة **Ettercap** هي أداة مفتوحة المصدر تستخدم في هجمات Man-in-the-Middle (MITM) على الشبكات المحلية. تُستخدم Ettercap لاختراق الاتصال بين جهازين وتحليل الحزم التي يتم تبادلها بينهما. يمكن أيضًا استخدام Ettercap لتسميم ARP (ARP poisoning)، مما يسمح للمهاجم بإعادة توجيه الحزم بين الأجهزة المتصلة بالشبكة دون علمهم.</p>
+
+        <p><strong>أهمية استخدام Ettercap:</strong></p>
+        <ul>
+            <li>تنفيذ هجمات Man-in-the-Middle (MITM) في الشبكات المحلية.</li>
+            <li>تنفيذ تسميم ARP (ARP poisoning) لتمرير الحزم عبر المهاجم.</li>
+            <li>تحليل الحزم المارة عبر الشبكة وتعديل البيانات المتبادلة.</li>
+            <li>اختراق كلمات المرور والبيانات الحساسة من الاتصالات غير المشفرة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Ettercap:</strong></p>
+        <ul>
+            <li><strong><code>ettercap -G</code></strong>: هذا الأمر يشغل واجهة المستخدم الرسومية (GUI) لأداة Ettercap.</li>
+            <li><strong><code>ettercap -T -M arp /[عنوان الـ IP للمهاجم]/ /[عنوان الـ IP الهدف]/</code></strong>: هذا الأمر يستخدم لتنفيذ هجوم ARP poisoning بين جهازين في الشبكة، حيث يعيد توجيه الحزم عبر المهاجم. على سبيل المثال، <code>ettercap -T -M arp /192.168.1.1/ /192.168.1.2/</code>.</li>
+            <li><strong><code>ettercap -T -M arp /[عنوان الـ IP المصدر]/ /[عنوان الـ IP الوجهة]/</code></strong>: لتنفيذ هجوم ARP poisoning بين جهازين محددين على الشبكة.</li>
+            <li><strong><code>ettercap -T -M arp -i eth0</code></strong>: لاستخدام واجهة الشبكة `eth0` لتمكين الهجوم ARP poisoning.</li>
+            <li><strong><code>ettercap -T -M arp -i eth0 -P dns_spoof</code></strong>: لتفعيل هجوم DNS Spoofing باستخدام أداة Ettercap بعد تمكين هجوم ARP poisoning.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Ettercap:</strong></p>
+        <ul>
+            <li><code>ettercap -T -M arp /192.168.1.1/ /192.168.1.2/</code> - لتنفيذ هجوم ARP poisoning بين جهازين في الشبكة.</li>
+            <li><code>ettercap -T -M arp -i eth0</code> - لتنفيذ هجوم ARP poisoning باستخدام واجهة الشبكة eth0.</li>
+            <li><code>ettercap -T -M arp -i eth0 -P dns_spoof</code> - لتنفيذ هجوم ARP poisoning وتفعيل DNS Spoofing.</li>
+        </ul>
+
+        <p><strong>المميزات المتقدمة في Ettercap:</strong></p>
+        <ul>
+            <li><strong>DNS Spoofing:</strong> يمكن لـ Ettercap تغيير استجابة DNS لإعادة توجيه المستخدمين إلى مواقع مشبوهة أو مزيفة.</li>
+            <li><strong>SSL Stripping:</strong> يمكن لـ Ettercap فك تشفير اتصالات SSL وتمكين المهاجم من قراءة البيانات المشفرة.</li>
+            <li><strong>Filter Plugins:</strong> يمكن تحميل وتفعيل فلاتر لتحليل وتعديل الحزم الملتقطة في الوقت الحقيقي.</li>
+            <li><strong>واجهة رسومية أو نصية:</strong> يتيح Ettercap للمستخدمين استخدام واجهة رسومية أو واجهة نصية لتنفيذ الأوامر.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات التي يمكن تنفيذها باستخدام Ettercap:</strong></p>
+        <ul>
+            <li><strong>ARP Spoofing (ARP Poisoning):</strong> حيث يتم إرسال ردود ARP مزيفة للشبكة لإيهام الأجهزة بأن المهاجم هو البوابة الافتراضية.</li>
+            <li><strong>DNS Spoofing:</strong> تغيير استجابات DNS لتهديد المستخدمين وإعادة توجيههم إلى مواقع غير آمنة أو ضارة.</li>
+            <li><strong>HTTP Spoofing:</strong> تنفيذ هجوم للحقن والتعديل على بيانات HTTP المارة عبر الشبكة.</li>
+            <li><strong>Man-in-the-Middle (MITM):</strong> اعتراض التراسل بين جهازين في الشبكة وتحليل البيانات المرسلة.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام Ettercap فقط في بيئات اختبارية أو مع إذن من مالكي الشبكات المستهدفة.</li>
+            <li>استخدام Ettercap في الشبكات العامة أو على الأجهزة التي لا تملك إذنًا لاختبارها يُعتبر غير قانوني ويعرض المستخدم للمسائلة القانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة DNSChef -->
+<div class="tool">
+    <h2 onclick="toggleDetails('dnschef')">DNSChef</h2>
+    <div id="dnschef" class="tool-details">
+        <p><strong>ما هي أداة DNSChef؟</strong></p>
+        <p>أداة **DNSChef** هي أداة مفتوحة المصدر تُستخدم لتنفيذ هجمات **DNS Spoofing** أو **DNS Hijacking**. وهي تسمح للمهاجم بتعديل استجابة DNS الخاصة بالنظام المستهدف وإعادة توجيه حركة المرور إلى مواقع مزيفة أو ضارة، مما يتيح له جمع معلومات حساسة أو تنفيذ هجمات إضافية.</p>
+
+        <p><strong>أهمية استخدام DNSChef:</strong></p>
+        <ul>
+            <li>إعادة توجيه الاستفسارات DNS إلى خوادم أو مواقع مزيفة.</li>
+            <li>تسهيل الهجمات على الشبكات المحلية باستخدام هجوم **DNS Spoofing**.</li>
+            <li>اختبار شبكات الأمان عن طريق تقديم استجابات DNS مخصصة.</li>
+            <li>تحليل حركة المرور وتوجيهها إلى خوادم وهمية لجمع المعلومات الحساسة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في DNSChef:</strong></p>
+        <ul>
+            <li><strong><code>dnschef --start-dns-proxy</code></strong>: تشغيل خادم DNS وهمي يقوم بالتلاعب في الاستجابات الخاصة بطلبات DNS. هذه هي الوظيفة الأساسية التي يقدمها DNSChef، حيث يقوم بتوجيه طلبات DNS إلى خوادم مخصصة أو مزيفة.</li>
+            <li><strong><code>dnschef --fakeip [عنوان الـ IP]</code></strong>: لتحديد عنوان IP مزيف سيتم إرجاعه كاستجابة لأي استفسار DNS موجه إلى الخادم. يمكن استخدامها مع خيار **--start-dns-proxy** لجعل DNSChef يعيد توجيه كل الطلبات إلى هذا العنوان.</li>
+            <li><strong><code>dnschef --set-a-record [اسم المجال] [عنوان الـ IP]</code></strong>: لإعداد سجل A مخصص لمجال معين. على سبيل المثال، إذا أردت توجيه طلبات الوصول إلى "example.com" إلى **192.168.1.100**، يمكنك استخدام الأمر التالي: <code>dnschef --set-a-record example.com 192.168.1.100</code>.</li>
+            <li><strong><code>dnschef --dns-server [عنوان الـ IP]</code></strong>: لتحديد عنوان IP لخادم DNS الذي سيتم استخدامه في الاستعلامات. هذا الخيار يمكن استخدامه للاتصال بخادم DNS خارجي أو داخلي.</li>
+            <li><strong><code>dnschef --log [اسم الملف]</code></strong>: لتسجيل كل الطلبات والاستجابات التي يتم معالجتها من خلال DNSChef في ملف محدد.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام DNSChef:</strong></p>
+        <ul>
+            <li><code>dnschef --start-dns-proxy --fakeip 192.168.1.100</code> - لتشغيل خادم DNS وهمي مع إعادة توجيه جميع الطلبات إلى عنوان IP المزيف **192.168.1.100**.</li>
+            <li><code>dnschef --set-a-record example.com 192.168.1.100</code> - لتوجيه أي طلب DNS إلى "example.com" إلى عنوان **192.168.1.100**.</li>
+            <li><code>dnschef --log dnschef_log.txt</code> - لتسجيل جميع الطلبات والاستجابات في ملف **dnschef_log.txt**.</li>
+            <li><code>dnschef --start-dns-proxy --dns-server 8.8.8.8</code> - لتوجيه طلبات DNS إلى خادم DNS خارجي (مثل **Google DNS** على **8.8.8.8**).</li>
+        </ul>
+
+        <p><strong>المميزات المتقدمة في DNSChef:</strong></p>
+        <ul>
+            <li><strong>DNS Spoofing:</strong> يمكن لـ DNSChef تنفيذ هجوم **DNS Spoofing** عن طريق تعديل استجابة DNS للمجالات التي يتم استفسارها، مما يتيح للمهاجم توجيه المستخدمين إلى مواقع مزيفة.</li>
+            <li><strong>تخصيص سجلات DNS:</strong> يمكنك تخصيص سجلات DNS لأي مجال باستخدام أوامر مثل **--set-a-record** لتحديد عنوان IP للمجال.</li>
+            <li><strong>DNS Hijacking:</strong> يمكن لـ DNSChef تعديل الاستجابات DNS لإعادة توجيه الزوار إلى مواقع خبيثة لجمع البيانات أو تنفيذ هجمات إضافية.</li>
+            <li><strong>تخصيص استجابات DNS:</strong> يسمح لك بتخصيص الاستجابات لكل نوع من أنواع سجلات DNS مثل **A** و **MX** و **NS** و **TXT**.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات التي يمكن تنفيذها باستخدام DNSChef:</strong></p>
+        <ul>
+            <li><strong>DNS Spoofing:</strong> تلاعب استجابات DNS لضمان أن المستخدمين يتوجهون إلى مواقع وهمية أو ضارة.</li>
+            <li><strong>DNS Hijacking:</strong> تلاعب في الاستجابة للطلبات لإعادة توجيه المستخدمين إلى خوادم ضارة أو مواقع مزيفة لجمع البيانات.</li>
+            <li><strong>Phishing:</strong> إعادة توجيه مستخدمين غير مدركين إلى مواقع مزيفة لجمع معلومات حساسة مثل كلمات المرور.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام DNSChef فقط في بيئات اختبارية أو مع إذن من مالكي الشبكات المستهدفة.</li>
+            <li>استخدام DNSChef على الأنظمة أو الشبكات التي لا تملك إذنًا لاختبارها يُعتبر غير قانوني وقد يؤدي إلى عواقب قانونية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة OpenVAS -->
+<div class="tool">
+    <h2 onclick="toggleDetails('openvas')">OpenVAS</h2>
+    <div id="openvas" class="tool-details">
+        <p><strong>ما هي أداة OpenVAS؟</strong></p>
+        <p>أداة **OpenVAS** (Open Vulnerability Assessment System) هي أداة مفتوحة المصدر تستخدم لاختبار الثغرات في الشبكات والأنظمة. يقوم OpenVAS بفحص الأنظمة للكشف عن الثغرات الأمنية، وتحليل مستوى الأمان، ويوفر تقارير مفصلة تساعد في تحسين الحماية. تُعتبر OpenVAS واحدة من أهم الأدوات في تقييم الأمان الشبكي والأنظمة.</p>
+
+        <p><strong>أهمية استخدام OpenVAS:</strong></p>
+        <ul>
+            <li>إجراء مسح شامل لاكتشاف الثغرات الأمنية في الأنظمة والشبكات.</li>
+            <li>تحليل الأمان وتقديم تقارير مفصلة تساعد في تحسين السياسات الأمنية.</li>
+            <li>فحص الأنظمة الداخلية والخارجية للكشف عن الثغرات والأخطاء في التكوينات الأمنية.</li>
+            <li>تقديم حلول لمعالجة الثغرات المكتشفة لتقليل المخاطر الأمنية.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في OpenVAS:</strong></p>
+        <ul>
+            <li><strong><code>openvas-setup</code></strong>: لتثبيت وتحديث OpenVAS، حيث يقوم هذا الأمر بتثبيت جميع المكونات اللازمة لإعداد البيئة واختبار الثغرات.</li>
+            <li><strong><code>openvas-start</code></strong>: لبدء تشغيل خدمة OpenVAS بعد الإعداد، ليتمكن المستخدم من الوصول إلى واجهة الويب الخاصة بالأداة.</li>
+            <li><strong><code>openvas-check-setup</code></strong>: للتحقق من تكوين OpenVAS والتأكد من أن كل شيء مضبوط بشكل صحيح للعمل.</li>
+            <li><strong><code>openvas-stop</code></strong>: لإيقاف خدمة OpenVAS بعد الانتهاء من الفحص أو إذا كان هناك حاجة لإيقافه لأغراض الصيانة.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام OpenVAS:</strong></p>
+        <ul>
+            <li><code>openvas-setup</code> - لتثبيت أو تحديث OpenVAS.</li>
+            <li><code>openvas-start</code> - لبدء خدمة OpenVAS.</li>
+            <li><code>openvas-check-setup</code> - للتحقق من إعدادات OpenVAS والتأكد من أنه تم إعداده بشكل صحيح.</li>
+            <li><code>openvas-stop</code> - لإيقاف الخدمة بعد إتمام الفحص.</li>
+        </ul>
+
+        <p><strong>شرح واجهة OpenVAS:</strong></p>
+        <ul>
+            <li><strong>الواجهة الرئيسية (Greenbone Security Assistant):</strong> هي واجهة الويب التي يمكن من خلالها الوصول إلى إعدادات OpenVAS، بدء المسح، وتحديد الأهداف، بالإضافة إلى الاطلاع على التقارير.</li>
+            <li><strong>المسح (Scan):</strong> يمكن للمستخدم تحديد الأهداف والفحص لاكتشاف الثغرات الأمنية في الأنظمة أو الشبكات. تشمل هذه الفحوصات تقييم الثغرات، وتحليل الأداء، والمسح السريع.</li>
+            <li><strong>التقارير (Reports):</strong> بعد اكتمال المسح، يتم إنشاء تقرير يوضح الثغرات التي تم اكتشافها مع حلول لتقليص المخاطر الأمنية.</li>
+        </ul>
+
+        <p><strong>أنواع الفحوصات التي يمكن إجراؤها باستخدام OpenVAS:</strong></p>
+        <ul>
+            <li><strong>مسح الثغرات (Vulnerability Scan):</strong> يقوم فحص الثغرات بمراجعة الأنظمة لاكتشاف الثغرات المعروفة باستخدام قواعد بيانات الثغرات مثل CVE (Common Vulnerabilities and Exposures).</li>
+            <li><strong>مسح الشبكة (Network Scan):</strong> يستخدم لاكتشاف الثغرات في الشبكات الخاصة أو العامة التي تتضمن خدمات الإنترنت.</li>
+            <li><strong>مسح النظام (System Scan):</strong> يتم فحص الأنظمة المثبتة على الخوادم أو محطات العمل للتحقق من وجود ثغرات تتعلق بالخدمات أو التطبيقات المثبتة.</li>
+            <li><strong>مسح الأمان الشامل (Full Security Scan):</strong> يعتبر فحصًا شاملاً لجميع الأنظمة والخدمات للتأكد من عدم وجود أي ثغرات أو مشكلات أمنية.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب استخدام OpenVAS فقط في بيئات اختبارية أو مع إذن من مالكي الشبكات والأنظمة.</li>
+            <li>يُعتبر فحص الأنظمة التي لا تملك إذنًا لاختبارها غير قانوني وقد يؤدي إلى عواقب قانونية.</li>
+            <li>يُفضل القيام بتحديث الأداة بشكل دوري لضمان الحصول على أفضل نتائج من خلال قاعدة بيانات الثغرات المحدثة.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة OWASP ZAP -->
+<div class="tool">
+    <h2 onclick="toggleDetails('zap')">OWASP ZAP</h2>
+    <div id="zap" class="tool-details">
+        <p><strong>ما هي أداة OWASP ZAP؟</strong></p>
+        <p>أداة **OWASP ZAP** (Zed Attack Proxy) هي أداة مفتوحة المصدر تهدف إلى مساعدة المختبرين الأمنيين في العثور على الثغرات الأمنية في تطبيقات الويب. تم تطوير ZAP من قبل مشروع **OWASP** (Open Web Application Security Project) وتهدف إلى تقديم أدوات فحص أمان التطبيقات بشكل سهل وفعّال. تعتبر ZAP من الأدوات الشهيرة في اختبار أمان تطبيقات الويب.</p>
+
+        <p><strong>أهمية استخدام OWASP ZAP:</strong></p>
+        <ul>
+            <li>أداة قوية لفحص تطبيقات الويب للكشف عن الثغرات الأمنية.</li>
+            <li>توفر واجهة مستخدم رسومية تتيح للمختبرين تتبع الثغرات واختبارها بسهولة.</li>
+            <li>يدعم الفحص التلقائي والمراقبة المتقدمة للأنشطة الأمنية في تطبيقات الويب.</li>
+            <li>يعد مناسبًا للمبتدئين والمختبرين الأمنيين المحترفين.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في OWASP ZAP:</strong></p>
+        <ul>
+            <li><strong><code>zap.sh</code></strong>: لتشغيل OWASP ZAP من خلال واجهة سطر الأوامر في أنظمة لينوكس أو macOS.</li>
+            <li><strong><code>zap.bat</code></strong>: لتشغيل OWASP ZAP من خلال واجهة سطر الأوامر في أنظمة ويندوز.</li>
+            <li><strong><code>zap-cli</code></strong>: أداة سطر أوامر للتحكم في OWASP ZAP من خلال سطر الأوامر في بيئات Python. يمكن استخدامها لتشغيل المسح، عرض النتائج، وإدارة العمليات الأخرى.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام OWASP ZAP:</strong></p>
+        <ul>
+            <li><code>zap.sh</code> - لتشغيل OWASP ZAP على أنظمة لينوكس أو macOS.</li>
+            <li><code>zap.bat</code> - لتشغيل OWASP ZAP على أنظمة ويندوز.</li>
+            <li><code>zap-cli quick-scan http://example.com</code> - لإجراء فحص سريع لأحد مواقع الويب باستخدام OWASP ZAP.</li>
+            <li><code>zap-cli spider http://example.com</code> - لاستخدام أداة **Spider** من ZAP لاستكشاف الموقع بشكل كامل.</li>
+        </ul>
+
+        <p><strong>شرح واجهة OWASP ZAP:</strong></p>
+        <ul>
+            <li><strong>الواجهة الرئيسية:</strong> توفر ZAP واجهة رسومية تسهل على المستخدمين إجراء الفحوصات. توفر الأداة قائمة من الخيارات مثل **Spider** (لاستكشاف الموقع) و**Active Scan** (لإجراء فحص أمني نشط) و**Passive Scan** (لإجراء فحص أمني سلبي).</li>
+            <li><strong>المسح النشط (Active Scan):</strong> هذه الميزة تُستخدم لفحص الثغرات الأمنية في تطبيقات الويب بشكل نشط. بعد اكتشاف جميع روابط الموقع باستخدام أداة **Spider**، يقوم **Active Scan** بالبحث عن ثغرات مثل XSS، SQL Injection، و CSRF.</li>
+            <li><strong>المسح السلبي (Passive Scan):</strong> يعتمد هذا الفحص على تحليل البيانات التي يتم جمعها من خلال التصفح العادي لموقع الويب دون التفاعل بشكل مباشر مع التطبيق أو المحاولة لاختراقه.</li>
+            <li><strong>التقرير:</strong> بعد إجراء الفحص، توفر OWASP ZAP تقارير مفصلة حول الثغرات المكتشفة مع توصيات حول كيفية تصحيحها.</li>
+        </ul>
+
+        <p><strong>أنواع الفحوصات التي يمكن إجراؤها باستخدام OWASP ZAP:</strong></p>
+        <ul>
+            <li><strong>مسح الثغرات XSS (Cross-Site Scripting):</strong> للبحث عن ثغرات XSS في تطبيقات الويب التي يمكن أن تسمح للمهاجمين بتنفيذ أكواد JavaScript خبيثة على المتصفح.</li>
+            <li><strong>حقن SQL (SQL Injection):</strong> لاختبار وجود ثغرات في التطبيق قد تسمح للمهاجمين بحقن استعلامات SQL خبيثة للوصول إلى قاعدة البيانات أو تعديلها.</li>
+            <li><strong>التحقق من CSRF (Cross-Site Request Forgery):</strong> لاكتشاف الثغرات التي قد تسمح للمهاجمين بإرسال طلبات غير مصرح بها نيابة عن المستخدمين.</li>
+            <li><strong>الفحص ضد ملفات التعريف (Directory Traversal):</strong> لاكتشاف الثغرات التي تسمح للمهاجمين بالوصول إلى ملفات النظام الحساسة عبر استغلال ثغرات في التطبيق.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>OWASP ZAP يُعتبر أداة ممتازة لفحص أمان تطبيقات الويب، وهو مناسب للمطورين والمختبرين الأمنيين على حد سواء.</li>
+            <li>يُفضل استخدام ZAP في بيئات الاختبار أو مع إذن من مالكي التطبيق أو الموقع المستهدف.</li>
+            <li>تتوفر OWASP ZAP أيضًا في إصدار يُمكن دمجه مع أدوات أتمتة الفحص الأمني الأخرى مثل **Jenkins** لتسهيل عمليات التكامل المستمر (CI/CD).</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Ghidra -->
+<div class="tool">
+    <h2 onclick="toggleDetails('ghidra')">Ghidra</h2>
+    <div id="ghidra" class="tool-details">
+        <p><strong>ما هي أداة Ghidra؟</strong></p>
+        <p>أداة **Ghidra** هي أداة تحليل عكسي مفتوحة المصدر تم تطويرها بواسطة وكالة الأمن القومي الأمريكية (NSA). تستخدم بشكل رئيسي لتحليل البرمجيات التي قد تكون مشفرة أو تحتوي على ثغرات. تدعم Ghidra عددًا كبيرًا من أنواع الملفات الثنائية وتتيح للمستخدمين إمكانية تحليل الأكواد المجمعة لأغراض الفحص الأمني، والهندسة العكسية، واكتشاف الثغرات.</p>
+
+        <p><strong>أهمية استخدام Ghidra:</strong></p>
+        <ul>
+            <li>تعتبر أداة قوية لتحليل البرمجيات المجمعة وإجراء الهندسة العكسية.</li>
+            <li>تدعم مجموعة واسعة من أنظمة التشغيل والملفات الثنائية (مثل PE وELF وMach-O).</li>
+            <li>تمكن المحللين من فحص شفرة البرنامج وتحليلها لاكتشاف الأخطاء أو الثغرات الأمنية.</li>
+            <li>تدعم أوامر السكربتات المدمجة بلغة Python وJava لزيادة إمكانيات التحليل.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Ghidra:</strong></p>
+        <ul>
+            <li><strong><code>ghidraRun</code></strong>: هذا هو الأمر الأساسي لتشغيل Ghidra في بيئة **Linux** أو **macOS**.</li>
+            <li><strong><code>ghidra.bat</code></strong>: يستخدم هذا الأمر لتشغيل Ghidra على **Windows** من خلال واجهة سطر الأوامر.</li>
+            <li><strong><code>analyzeHeadless</code></strong>: لتشغيل Ghidra في وضع الرأس (Headless mode) في بيئات السيرفرات أو عندما يكون من الضروري إجراء تحليل بدون واجهة رسومية.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Ghidra:</strong></p>
+        <ul>
+            <li><code>ghidraRun</code> - لتشغيل واجهة Ghidra الرسومية.</li>
+            <li><code>analyzeHeadless project_directory input_file</code> - لاستخدام Ghidra في وضع الرأس لتحليل ملف معين بشكل غير تفاعلي.</li>
+            <li><code>ghidra.bat</code> - لتشغيل Ghidra على نظام Windows باستخدام واجهة سطر الأوامر.</li>
+        </ul>
+
+        <p><strong>شرح واجهة Ghidra:</strong></p>
+        <ul>
+            <li><strong>الواجهة الرسومية:</strong> توفر Ghidra واجهة رسومية متقدمة تتيح للمستخدمين تحميل وتحليل الملفات الثنائية. يمكنهم فحص الشيفرة البرمجية وفحص وظائف البرنامج لاكتشاف أي عيوب أو ثغرات أمنية.</li>
+            <li><strong>التحليل الديناميكي (Dynamic Analysis):</strong> باستخدام أدوات مثل **Debugger**، يمكن للمستخدمين تحليل سلوك البرنامج أثناء التنفيذ. هذا يساعد على فحص طريقة عمل البرمجيات، مثل البرامج التي تقوم بعمليات غير متوقعة.</li>
+            <li><strong>التحليل الثابت (Static Analysis):</strong> يسمح بالتحليل الثابت للشفرة البرمجية من خلال فحص الكود المصدري بدون تنفيذ البرنامج.</li>
+            <li><strong>التكامل مع السكربتات:</strong> تدعم Ghidra استخدام السكربتات المكتوبة بلغة **Python** و **Java** لتوسيع وظائف الأداة وتنفيذ المهام المتقدمة.</li>
+        </ul>
+
+        <p><strong>أنواع التحليل في Ghidra:</strong></p>
+        <ul>
+            <li><strong>التحليل الثابت (Static Analysis):</strong> عملية فحص الكود الثنائي أو المصدري لاكتشاف الثغرات من دون تنفيذ البرنامج. يشمل هذا فحص الذاكرة، تسلسل التعليمات، والبيانات المستخدمة داخل البرنامج.</li>
+            <li><strong>التحليل الديناميكي (Dynamic Analysis):</strong> يتضمن دراسة كيف يتفاعل البرنامج مع النظام أثناء التشغيل، وهو مفيد لاكتشاف الثغرات التي قد لا تظهر في التحليل الثابت.</li>
+            <li><strong>تحليل النظام (System Analysis):</strong> يوفر معلومات شاملة حول البيئة التي يتم فيها تشغيل البرنامج، مثل الأنظمة الأساسية ووظائف النظام.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>Ghidra يمكن استخدامها لتحليل البرامج الخبيثة وفحص الثغرات الأمنية في البرمجيات، وهي مفيدة للمختبرين الأمنيين.</li>
+            <li>استخدام Ghidra يتطلب بعض الخبرة في التحليل العكسي وفهم كيفية عمل البرمجيات المجمعة.</li>
+            <li>تتوفر Ghidra أيضًا كأداة مفتوحة المصدر ويمكن للمستخدمين المساهمة في تطويرها من خلال مشروعها على GitHub.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Radare2 -->
+<div class="tool">
+    <h2 onclick="toggleDetails('radare2')">Radare2</h2>
+    <div id="radare2" class="tool-details">
+        <p><strong>ما هي أداة Radare2؟</strong></p>
+        <p>أداة **Radare2** هي أداة مفتوحة المصدر لتحليل البرمجيات وعمل الهندسة العكسية. توفر مجموعة شاملة من الأدوات لتحليل الثنائيات والبرامج من خلال تفكيك الأكواد البرمجية، وتحليل الهياكل الداخلية، وفحص محتوى الذاكرة. تُستخدم بشكل أساسي في فحص البرمجيات لاكتشاف الثغرات، وتحليل البرامج الخبيثة، وعمل الهندسة العكسية للمبرمجين ومختبري الأمان.</p>
+
+        <p><strong>أهمية استخدام Radare2:</strong></p>
+        <ul>
+            <li>أداة متعددة الاستخدامات لتحليل البرمجيات واكتشاف الثغرات من خلال فحص الملفات الثنائية.</li>
+            <li>تدعم العديد من أنظمة التشغيل وأنواع الملفات المختلفة مثل **ELF**، **PE**، **Mach-O**، **Android APK** وغيرها.</li>
+            <li>توفر بيئة تفاعلية وفائقة القوة لتحليل البرامج باستخدام أدوات مختلفة مثل التفكيك، والمراقبة، وتحليل الملفات.</li>
+            <li>تتيح للمستخدمين كتابة السكربتات لتوسيع الأداة أو إنشاء أدوات مخصصة لتحليل الثنائيات.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Radare2:</strong></p>
+        <ul>
+            <li><strong><code>r2 [اسم الملف]</code></strong>: هذا هو الأمر الأساسي لفتح ملف ثنائي في Radare2 وتحليله.</li>
+            <li><strong><code>aaa</code></strong>: أمر لتحليل بنية الملف بشكل شامل باستخدام أدوات التحليل التلقائي.</li>
+            <li><strong><code>afl</code></strong>: عرض جميع الدوال الموجودة في الملف الثنائي.</li>
+            <li><strong><code>pdf</code></strong>: هذا الأمر يعرض الكود التجميعي (disassembly) للوظيفة الحالية في واجهة Radare2.</li>
+            <li><strong><code>e [الإعداد] = [القيمة]</code></strong>: يستخدم لتعيين الإعدادات المختلفة في Radare2، مثل تغيير إعدادات الواجهة أو تصحيح الأخطاء.</li>
+            <li><strong><code>V</code></strong>: هذا الأمر يقوم بتشغيل واجهة المستخدم الرسومية (GUI) لRadare2، مما يتيح للمستخدمين التفاعل مع الأداة عبر واجهة رسومية بدلاً من واجهة سطر الأوامر.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Radare2:</strong></p>
+        <ul>
+            <li><code>r2 -A myfile</code> - لفتح وتحليل الملف الثنائي بشكل شامل باستخدام التحليل التلقائي.</li>
+            <li><code>afl</code> - لعرض جميع الدوال في الملف الثنائي وتحليلها.</li>
+            <li><code>pdf @main</code> - لعرض الكود التجميعي للوظيفة "main" في البرنامج.</li>
+            <li><code>e anal.debug=true</code> - لتفعيل وضع تصحيح الأخطاء أثناء التحليل.</li>
+            <li><code>r2 -d myfile</code> - لتشغيل Radare2 في وضع تصحيح الأخطاء (debugger) على الملف.</li>
+        </ul>
+
+        <p><strong>شرح واجهة Radare2:</strong></p>
+        <ul>
+            <li><strong>واجهة سطر الأوامر:</strong> Radare2 يستخدم واجهة سطر أوامر تفاعلية تسمح للمستخدمين بالتحكم الكامل في عملية التحليل، وهي مرنة للغاية وتوفر العديد من الأوامر المتقدمة للتحليل.</li>
+            <li><strong>الواجهة الرسومية (GUI):</strong> يمكن استخدام واجهة المستخدم الرسومية لعرض وتحليل البرمجيات بسهولة أكبر، ويمكن الوصول إليها باستخدام الأمر <code>V</code>.</li>
+            <li><strong>التفكيك (Disassembly):</strong> Radare2 يقدم أدوات التفكيك المتقدمة لعرض تعليمات البرمجيات مع فهم كامل لكيفية عمل الشيفرة الثنائية.</li>
+            <li><strong>تحليل الوظائف (Function Analysis):</strong> يتم تحليل كل دالة داخل البرنامج وفحص ما إذا كان هناك أي مشاكل أمنية أو تسريبات في الذاكرة.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>قد يتطلب استخدام Radare2 بعض الخبرة في الهندسة العكسية والتحليل الثنائي نظرًا لمرونتها وسعتها الكبيرة.</li>
+            <li>Radare2 هو أداة قوية بشكل خاص بالنسبة لمختبري الأمان الذين يتعاملون مع البرمجيات الخبيثة، وكذلك للباحثين في مجال الأمن السيبراني.</li>
+            <li>يمكنك أيضًا توسيع Radare2 عن طريق كتابة سكربتات بلغة **Python** أو **Lua** لتخصيص الأداة حسب احتياجاتك.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة OllyDbg -->
+<div class="tool">
+    <h2 onclick="toggleDetails('ollydbg')">OllyDbg</h2>
+    <div id="ollydbg" class="tool-details">
+        <p><strong>ما هي أداة OllyDbg؟</strong></p>
+        <p>أداة **OllyDbg** هي أداة لتصحيح الأخطاء (debugger) تُستخدم في تحليل البرامج الثنائية والهندسة العكسية. وهي تُعد واحدة من أشهر أدوات التصحيح على أنظمة **Windows**، حيث تتيح للمستخدمين تفكيك وتحليل البرامج لاكتشاف الثغرات، واختبار الأمان، وفهم كيفية عمل البرمجيات على مستوى التعليمات.</p>
+
+        <p><strong>أهمية استخدام OllyDbg:</strong></p>
+        <ul>
+            <li>أداة موجهة بشكل خاص لمهندسي البرمجيات ومختبري الأمان لتحليل البرامج من خلال تشغيلها خطوة بخطوة (step-by-step).</li>
+            <li>تُستخدم لفحص التطبيقات الخبيثة وفهم كيفية عملها، ما يجعلها مهمة في مجال الأمن السيبراني.</li>
+            <li>تمكن المستخدمين من مراقبة العمليات داخل البرنامج، مثل القيم المتغيرة والتفاعلات بين التعليمات، مما يساعد في اكتشاف الثغرات الأمنية.</li>
+            <li>تحتوي على واجهة رسومية سهلة الاستخدام مقارنة بالأدوات الأخرى.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في OllyDbg:</strong></p>
+        <ul>
+            <li><strong><code>OllyDbg [اسم الملف]</code></strong>: لفتح برنامج أو ملف ثنائي في OllyDbg وتحليله.</li>
+            <li><strong><code>F9</code></strong>: لتشغيل البرنامج خطوة بخطوة (Run).</li>
+            <li><strong><code>F7</code></strong>: لتنفيذ خطوة داخل الدالة (Step Into) لفحص تفاصيل أكثر حول التنفيذ.</li>
+            <li><strong><code>F8</code></strong>: لتنفيذ خطوة عبر الدالة (Step Over) لتجاوز الدوال والتركيز على التعليمات الأخرى.</li>
+            <li><strong><code>Ctrl+F9</code></strong>: لتشغيل البرنامج بشكل كامل من نقطة التوقف الحالية.</li>
+            <li><strong><code>Alt+F2</code></strong>: لإيقاف البرنامج أثناء تنفيذه.</li>
+            <li><strong><code>Ctrl+G</code></strong>: للانتقال إلى عنوان معين داخل الذاكرة أو البرنامج.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام OllyDbg:</strong></p>
+        <ul>
+            <li><code>OllyDbg myprogram.exe</code> - لفتح برنامج **myprogram.exe** في OllyDbg لتحليله.</li>
+            <li><code>F9</code> - لتشغيل البرنامج وتحليله أثناء التشغيل.</li>
+            <li><code>F7</code> - للانتقال إلى التعليمات التالية داخل الدالة للتحليل خطوة بخطوة.</li>
+            <li><code>Ctrl+G 0x401000</code> - للانتقال إلى العنوان 0x401000 في البرنامج لمتابعة التنفيذ من هناك.</li>
+            <li><code>Ctrl+F9</code> - لتشغيل البرنامج بشكل كامل من نقطة التوقف الحالية.</li>
+        </ul>
+
+        <p><strong>شرح واجهة OllyDbg:</strong></p>
+        <ul>
+            <li><strong>واجهة المستخدم الرسومية:</strong> OllyDbg يقدم واجهة رسومية غنية وسهلة الاستخدام لعرض الكود التجميعي (assembly code) والذاكرة المتاحة في البرنامج.</li>
+            <li><strong>التصحيح خطوة بخطوة:</strong> يمكن للمستخدمين مراقبة كل خطوة من خطوات تنفيذ البرنامج باستخدام مفاتيح الاختصار مثل **F7** و **F8**.</li>
+            <li><strong>التعليقات وتحليل الكود:</strong> يحتوي OllyDbg على ميزات لتطبيق التعليقات داخل الكود التجميعي، مما يساعد في تتبع سير العمل أثناء التحليل.</li>
+            <li><strong>عرض الذاكرة:</strong> يتيح للمستخدمين مراقبة وتعديل محتويات الذاكرة أثناء تشغيل البرنامج باستخدام نافذة **Memory Dump**.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>OllyDbg يعمل فقط على أنظمة **Windows** ويعتمد بشكل كبير على **التفكيك الثنائي**.</li>
+            <li>يتطلب استخدام OllyDbg بعض الخبرة في **الهندسة العكسية** و **التحليل الثنائي** لفهم كيفية تصحيح الأخطاء والتفاعل مع الكود.</li>
+            <li>يمكن للمستخدمين إضافة **المكونات الإضافية (plugins)** لتوسيع وظائف OllyDbg وزيادة كفاءته.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Firestarter -->
+<div class="tool">
+    <h2 onclick="toggleDetails('firestarter')">Firestarter</h2>
+    <div id="firestarter" class="tool-details">
+        <p><strong>ما هي أداة Firestarter؟</strong></p>
+        <p>أداة **Firestarter** هي واجهة رسومية لإدارة جدار الحماية على أنظمة **Linux**. تساعد الأداة في التحكم بسهولة في إعدادات جدار الحماية **iptables** عبر واجهة رسومية، مما يجعل من السهل على المستخدمين إدارة قواعد الجدار الناري دون الحاجة إلى كتابة أوامر **iptables** يدويًا. يتم استخدام **Firestarter** بشكل أساسي لحماية الشبكات من الوصول غير المصرح به ومنع التهديدات الأمنية.</p>
+
+        <p><strong>أهمية استخدام Firestarter:</strong></p>
+        <ul>
+            <li>توفير واجهة رسومية تسهل إدارة جدار الحماية **iptables** على أنظمة **Linux**.</li>
+            <li>مراقبة حركة مرور الشبكة واكتشاف الأنشطة المشبوهة.</li>
+            <li>إعداد قواعد جدار الحماية بسرعة لحماية الشبكة من الهجمات.</li>
+            <li>تسهيل تكوين الجدار الناري بدون الحاجة إلى معرفة عميقة بـ **iptables**.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Firestarter:</strong></p>
+        <ul>
+            <li><strong><code>firestarter</code></strong>: هذا هو الأمر الأساسي لفتح أداة Firestarter.</li>
+            <li><strong><code>firestarter --start</code></strong>: لتشغيل Firestarter وبدء مراقبة جدار الحماية.</li>
+            <li><strong><code>firestarter --stop</code></strong>: لإيقاف Firestarter وإلغاء الجدار الناري الذي تم تكوينه.</li>
+            <li><strong><code>firestarter --restart</code></strong>: لإعادة تشغيل Firestarter بعد تعديل إعداداته.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Firestarter:</strong></p>
+        <ul>
+            <li><code>firestarter</code> - لفتح واجهة Firestarter الرسومية لبدء إدارة جدار الحماية.</li>
+            <li><code>firestarter --start</code> - لتشغيل Firestarter وبدء تطبيق القواعد التي تم تكوينها.</li>
+            <li><code>firestarter --stop</code> - لإيقاف Firestarter ومنع جدار الحماية من العمل.</li>
+            <li><code>firestarter --restart</code> - لإعادة تشغيل Firestarter بعد تغيير إعدادات الجدار الناري.</li>
+        </ul>
+
+        <p><strong>شرح واجهة Firestarter:</strong></p>
+        <ul>
+            <li><strong>الشاشة الرئيسية:</strong> تعرض حالة الجدار الناري الحالي (مفعل أو غير مفعل) مع عرض الأنشطة المشبوهة.</li>
+            <li><strong>الشبكة الخارجية:</strong> يعرض حركة المرور على الشبكة الخارجية ويمكنك تحديد ما إذا كان يجب السماح أو حظر بعض المنافذ أو البروتوكولات.</li>
+            <li><strong>إعدادات الأمان:</strong> يمكنك ضبط إعدادات الأمان بما في ذلك القواعد المتقدمة مثل الحظر التلقائي للهجمات أو السماح بها.</li>
+            <li><strong>سجل الأحداث:</strong> يعرض سجلًا مفصلًا عن الأنشطة التي مر بها الجدار الناري مثل محاولات الوصول غير المصرح به.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>Firestarter يعمل على أنظمة **Linux** ويحتاج إلى صلاحيات الجذر (root) لإجراء التعديلات على جدار الحماية.</li>
+            <li>تعد **iptables** هي الأداة الفعلية التي تقوم Firestarter باستخدامها، لذا أي تغييرات في **Firestarter** تنعكس على إعدادات **iptables**.</li>
+            <li>يمكن أن تكون **Firestarter** أداة مثالية للمستخدمين الذين يفضلون واجهات رسومية بدلاً من الأوامر النصية.</li>
+        </ul>
+    </div>
+</div>
+  <!-- أداة Fail2Ban -->
+<div class="tool">
+    <h2 onclick="toggleDetails('fail2ban')">Fail2Ban</h2>
+    <div id="fail2ban" class="tool-details">
+        <p><strong>ما هي أداة Fail2Ban؟</strong></p>
+        <p>أداة **Fail2Ban** هي أداة مفتوحة المصدر تعمل على حماية الأنظمة من هجمات القوة العمياء (brute force attacks) وهجمات أخرى عن طريق مراقبة سجلات النظام لاكتشاف محاولات الدخول غير المصرح بها. عند اكتشاف محاولات فاشلة متعددة لتسجيل الدخول، تقوم الأداة بحظر عنوان الـ IP الذي قام بمحاولة الدخول لمدة معينة، مما يساهم في تأمين النظام.</p>
+
+        <p><strong>أهمية استخدام Fail2Ban:</strong></p>
+        <ul>
+            <li>حماية النظام من هجمات القوة العمياء على خدمات مثل SSH وFTP.</li>
+            <li>إيقاف العناوين التي تقوم بمحاولات تسجيل دخول غير مصرح بها.</li>
+            <li>زيادة الأمان عبر حظر العناوين التي يتم اكتشافها كمصدر للهجمات.</li>
+            <li>إدارة الحظر بشكل تلقائي، مما يقلل من الحاجة للمراقبة اليدوية.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Fail2Ban:</strong></p>
+        <ul>
+            <li><strong><code>fail2ban-client start</code></strong>: لبدء خدمة Fail2Ban.</li>
+            <li><strong><code>fail2ban-client stop</code></strong>: لإيقاف خدمة Fail2Ban.</li>
+            <li><strong><code>fail2ban-client status</code></strong>: لعرض حالة خدمة Fail2Ban.</li>
+            <li><strong><code>fail2ban-client status [اسم السجن]</code></strong>: لعرض حالة السجن (jail) المحدد مثل "sshd" (الذي يراقب SSH) أو "ftp" (الذي يراقب FTP).</li>
+            <li><strong><code>fail2ban-client unban [عنوان الـ IP]</code></strong>: لإلغاء حظر عنوان الـ IP المحدد.</li>
+            <li><strong><code>fail2ban-client set [اسم السجن] unbanip [عنوان الـ IP]</code></strong>: لإلغاء حظر عنوان IP من سجن معين.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Fail2Ban:</strong></p>
+        <ul>
+            <li><code>fail2ban-client start</code> - لبدء خدمة Fail2Ban.</li>
+            <li><code>fail2ban-client status</code> - لعرض حالة خدمة Fail2Ban.</li>
+            <li><code>fail2ban-client status sshd</code> - لعرض حالة السجن الخاص بـ SSH.</li>
+            <li><code>fail2ban-client unban 192.168.1.100</code> - لإلغاء حظر عنوان الـ IP 192.168.1.100.</li>
+            <li><code>fail2ban-client set sshd unbanip 192.168.1.100</code> - لإلغاء حظر الـ IP من سجن SSH.</li>
+        </ul>
+
+        <p><strong>شرح ملفات التكوين في Fail2Ban:</strong></p>
+        <ul>
+            <li><strong>/etc/fail2ban/jail.conf:</strong> هذا هو ملف التكوين الرئيسي الذي يحتوي على إعدادات السجون. يتم تحديد هنا الخدمات التي سيتم مراقبتها (مثل SSH، FTP، HTTP)، وقيم الحظر، وفترات الحظر.</li>
+            <li><strong>/etc/fail2ban/filter.d/:</strong> يحتوي هذا المجلد على ملفات التصفية التي تحتوي على الأنماط المستخدمة لاكتشاف الأنشطة غير المصرح بها في السجلات.</li>
+            <li><strong>/etc/fail2ban/action.d/:</strong> يحتوي هذا المجلد على الملفات التي تحدد الإجراءات التي يجب اتخاذها عند اكتشاف النشاط غير المصرح به، مثل إرسال إشعارات البريد الإلكتروني أو حظر عنوان الـ IP.</li>
+        </ul>
+
+        <p><strong>إعداد Fail2Ban لحماية SSH:</strong></p>
+        <ul>
+            <li لتأمين SSH باستخدام Fail2Ban، يجب التأكد من تمكين السجن الخاص بـ SSH في ملف التكوين `/etc/fail2ban/jail.conf`.</li>
+            <li يُمكنك إضافة إعدادات مثل:</li>
+            <pre>
+            [sshd]
+            enabled = true
+            port = ssh
+            filter = sshd
+            logpath = /var/log/auth.log
+            maxretry = 3
+            bantime = 600
+            </pre>
+            <li بعد التعديل، يمكن إعادة تشغيل Fail2Ban باستخدام الأمر <code>fail2ban-client restart</code> لتطبيق التغييرات.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>يجب تأكيد أن جدار الحماية يتيح لـ Fail2Ban حظر الـ IPs التي تقوم بمحاولات فاشلة.</li>
+            <li>Fail2Ban يمكن تكوينه ليعمل على أكثر من خدمة في نفس الوقت مثل SSH وApache وNginx وFTP.</li>
+            <li>من المهم أن تراجع سجلات Fail2Ban بشكل دوري لضمان عدم وجود أي مشاكل أو تناقضات في التكوين.</li>
+        </ul>
+    </div>
+</div>
+<!-- أداة Chkrootkit -->
+<div class="tool">
+    <h2 onclick="toggleDetails('chkrootkit')">Chkrootkit</h2>
+    <div id="chkrootkit" class="tool-details">
+        <p><strong>ما هي أداة Chkrootkit؟</strong></p>
+        <p>أداة **Chkrootkit** هي أداة مفتوحة المصدر تُستخدم لاكتشاف الجذور (rootkits) على الأنظمة المستندة إلى Linux. الجذور هي برامج خبيثة تهدف إلى التسلل إلى النظام والاختفاء بحيث يصعب اكتشافها. يقوم **Chkrootkit** بفحص النظام بحثًا عن مؤشرات قد تشير إلى وجود جذور خبيثة قد تتسلل إلى النظام، مما يساهم في الحفاظ على أمان النظام.</p>
+
+        <p><strong>أهمية استخدام Chkrootkit:</strong></p>
+        <ul>
+            <li>كشف وجود الجذور (rootkits) الخبيثة على النظام.</li>
+            <li>تحليل الأنظمة المعرضة للخطر واكتشاف التسللات في وقت مبكر.</li>
+            <li>أداة مفيدة للكشف عن البرمجيات الضارة التي قد تخترق النظام وتظل مختفية.</li>
+            <li>مساعدة في الحفاظ على أمان النظام من خلال توفير تقرير دقيق حول الأضرار المحتملة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في Chkrootkit:</strong></p>
+        <ul>
+            <li><strong><code>chkrootkit</code></strong>: الأمر الأساسي لاكتشاف الجذور في النظام. عند تشغيل هذا الأمر، ستبدأ الأداة في فحص النظام بحثًا عن أدلة على وجود جذور خبيثة.</li>
+            <li><strong><code>chkrootkit -q</code></strong>: هذا الخيار يسمح بإجراء الفحص في وضع "هادئ" بحيث يعرض فقط النتائج ذات الأهمية، مما يخفف من عدد التفاصيل المعروضة.</li>
+            <li><strong><code>chkrootkit -r [الدليل]</code></strong>: يستخدم هذا الخيار لتحديد دليل محدد ليتم فحصه بدلاً من الفحص الشامل لجميع النظام.</li>
+            <li><strong><code>chkrootkit -l</code></strong>: يعرض هذا الخيار جميع الأدوات التي يمكن لـ **Chkrootkit** استخدامها في فحص النظام.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام Chkrootkit:</strong></p>
+        <ul>
+            <li><code>chkrootkit</code> - لتشغيل فحص كامل للنظام لاكتشاف الجذور.</li>
+            <li><code>chkrootkit -q</code> - لتشغيل فحص هادئ دون عرض التفاصيل غير المهمة.</li>
+            <li><code>chkrootkit -r /home/user</code> - لتحديد دليل معين لفحصه، مثل دليل المستخدم.</li>
+            <li><code>chkrootkit -l</code> - لعرض الأدوات المتاحة في **Chkrootkit**.</li>
+        </ul>
+
+        <p><strong>ماذا يحدث بعد الفحص؟</strong></p>
+        <ul>
+            <li بعد الفحص باستخدام **Chkrootkit**، ستقوم الأداة بعرض نتائج الفحص. إذا تم اكتشاف أي جذور خبيثة، ستظهر أسماء الأدوات الضارة التي قد تكون موجودة في النظام.</li>
+            <li يمكن أن يتضمن التقرير أخطاء أو تحذيرات تتعلق بالجذور المكتشفة في النظام. إذا لم يتم اكتشاف أي جذور، ستظهر رسالة تُفيد بأن النظام آمن.</li>
+        </ul>
+
+        <p><strong>الملفات والسجلات المتعلقة بفحص Chkrootkit:</strong></p>
+        <ul>
+            <li<code>/var/log/</code> يحتوي على سجلات النظام التي قد تساهم في عملية التشخيص بعد فحص **Chkrootkit**، ويجب مراقبتها للتأكد من وجود أي تغييرات أو أضرار.</li>
+            <li يعتمد **Chkrootkit** على مجموعة من الفحوصات والأنماط المحددة لاكتشاف الجذور في النظام، والتي تتراوح بين تحليل الشبكة والملفات في النظام.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>من المهم أن يتم تشغيل **Chkrootkit** بصلاحيات الجذر (root) لكي تتمكن الأداة من فحص جميع الملفات التي قد تحتوي على الجذور.</li>
+            <li>يجب التأكد من تحديث **Chkrootkit** بانتظام لضمان أنه يتضمن أحدث قواعد بيانات لاكتشاف الجذور.</li>
+            <li>رغم أن **Chkrootkit** أداة فعالة، إلا أنه لا يضمن اكتشاف كل الجذور، لذا يجب استخدام أدوات إضافية وتقنيات أخرى لزيادة الأمان.</li>
+        </ul>
+    </div>
+</div>
+<!-- أداة Social-Engineer Toolkit (SET) -->
+<div class="tool">
+    <h2 onclick="toggleDetails('social-engineer')">Social-Engineer Toolkit (SET)</h2>
+    <div id="social-engineer" class="tool-details">
+        <p><strong>ما هي أداة Social-Engineer Toolkit (SET)؟</strong></p>
+        <p>أداة **Social-Engineer Toolkit (SET)** هي أداة مفتوحة المصدر تُستخدم لمحاكاة هجمات الهندسة الاجتماعية بهدف اختبار أمان الأنظمة والأفراد. تُستخدم الأداة من قبل الباحثين الأمنيين لاختبار قدرة الأفراد والشركات على التعامل مع هجمات الهندسة الاجتماعية، مثل التصيد الاحتيالي (Phishing)، والتلاعب النفسي، والهجمات الموجهة.</p>
+
+        <p><strong>أهمية استخدام SET:</strong></p>
+        <ul>
+            <li>محاكاة هجمات الهندسة الاجتماعية لاختبار أمان الأفراد والشركات.</li>
+            <li>يمكن استخدامها في تقييم قدرة الأفراد على التعامل مع محاولات الاحتيال والإقناع.</li>
+            <li>أداة فعالة في التعرف على الثغرات الأمنية في الشبكات من خلال محاكاة هجمات التصيد الاحتيالي والهندسة الاجتماعية.</li>
+            <li>تساعد في التدريب على كيفية التصدي لأساليب الهندسة الاجتماعية المختلفة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في SET:</strong></p>
+        <ul>
+            <li><strong><code>setoolkit</code></strong>: هذا هو الأمر الأساسي لتشغيل أداة **SET** في الطرفية. عند تشغيل هذا الأمر، ستتمكن من الوصول إلى واجهة الأداة لاختيار نوع الهجوم الذي ترغب في محاكاته.</li>
+            <li><strong><code>setoolkit -h</code></strong>: هذا الأمر يعرض قائمة بالخيارات المتاحة ويشرح كيفية استخدام الأداة بشكل كامل.</li>
+            <li><strong><code>setoolkit -help</code></strong>: يعرض أيضًا المساعدة الخاصة بالأداة ويقدم تفاصيل حول الأوامر والخيارات المختلفة المتاحة.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام SET:</strong></p>
+        <ul>
+            <li><code>setoolkit</code> - لتشغيل أداة **SET** والوصول إلى واجهتها الرسومية التي تسمح لك باختيار نوع الهجوم.</li>
+            <li><code>setoolkit -h</code> - لعرض خيارات الأداة المتاحة والوصف الخاص بكل خيار.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات التي يمكن تنفيذها باستخدام SET:</strong></p>
+        <ul>
+            <li><strong>هجوم التصيد الاحتيالي (Phishing):</strong> يمكن لـ **SET** إرسال رسائل بريد إلكتروني مزيفة تحتوي على روابط إلى صفحات مزيفة لسرقة المعلومات مثل كلمات المرور.</li>
+            <li><strong>هجوم التصيد الصوتي (Vishing):</strong> يمكن محاكاة الهجمات الصوتية عبر الهاتف لسرقة المعلومات الشخصية.</li>
+            <li><strong>هجوم البرامج الخبيثة:</strong> إنشاء برامج خبيثة محمولة على محركات USB أو روابط لزرعها في الأجهزة المستهدفة.</li>
+            <li><strong>هجوم استغلال الويب:</strong> يمكن لـ **SET** استغلال الثغرات في مواقع الويب بهدف استهداف ضحايا معينين.</li>
+            <li><strong>هجوم استنساخ الموقع (Website Clone):</strong> يمكن إنشاء نسخة طبق الأصل من موقع ويب معروف لسرقة بيانات المستخدمين.</li>
+            <li><strong>الهجمات الاجتماعية المباشرة:</strong> يمكن استخدام **SET** لإرسال رسائل تهديد أو تصيد موجه إلى المستخدمين لإجبارهم على الكشف عن معلومات حساسة.</li>
+        </ul>
+
+        <p><strong>الخطوات الأساسية لاستخدام SET لتنفيذ هجوم:</strong></p>
+        <ul>
+            <li>شغّل الأداة باستخدام <code>setoolkit</code>.</li>
+            <li>اختر نوع الهجوم الذي ترغب في محاكاته من الخيارات المتاحة في واجهة **SET**.</li>
+            <li>حدد الهدف (سواء كان بريد إلكتروني، موقع ويب، أو هدف آخر).</li>
+            <li>نفذ الهجوم وانتظر النتائج.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>تُستخدم **SET** فقط في بيئات اختبارية أو مع إذن من الجهات المستهدفة. استخدام الأداة على الأنظمة التي لا تملك إذنًا لاختبارها يُعد غير قانوني.</li>
+            <li>من الأفضل استخدام **SET** كجزء من اختبار الأمان الشامل والذي يتضمن عدة أدوات وتقنيات أخرى.</li>
+            <li>تأكد من تحديث **SET** بانتظام للحصول على أحدث تقنيات الهجوم والتصحيح.</li>
+        </ul>
+    </div>
+</div>
+<!-- أداة BeEF -->
+<div class="tool">
+    <h2 onclick="toggleDetails('beef')">BeEF (Browser Exploitation Framework)</h2>
+    <div id="beef" class="tool-details">
+        <p><strong>ما هي أداة BeEF؟</strong></p>
+        <p>أداة **BeEF** (Browser Exploitation Framework) هي أداة مفتوحة المصدر تُستخدم لاختبار أمان متصفحات الإنترنت من خلال استغلال الثغرات الأمنية فيها. تركز الأداة على اختراق المتصفحات واستغلال الثغرات الموجودة فيها من خلال تنفيذ هجمات عبر المتصفح. تعد BeEF أداة قوية في مجال اختبارات الأمان والهجمات الاجتماعية، حيث يمكن استخدامها لتنفيذ العديد من الهجمات ضد الضحايا عبر الإنترنت.</p>
+
+        <p><strong>أهمية استخدام BeEF:</strong></p>
+        <ul>
+            <li>يمكن استخدامها لاختبار الثغرات في المتصفحات وكيفية استغلالها من قبل المهاجمين.</li>
+            <li>تُعد من الأدوات الفعالة في اختبار أمان التطبيقات عبر الإنترنت وفحص قدرة المتصفحات على مواجهة الهجمات.</li>
+            <li>تساعد في محاكاة هجمات عبر المتصفح لاكتشاف الثغرات الأمنية في الأنظمة المستهدفة.</li>
+        </ul>
+
+        <p><strong>شرح الأوامر الأساسية في BeEF:</strong></p>
+        <ul>
+            <li><strong><code>beef-xss</code></strong>: هذا هو الأمر الأساسي لتشغيل **BeEF** في الطرفية. عند تشغيله، سيتم بدء الخادم الخاص بـ **BeEF** وفتح واجهتها للمهاجم للتحكم في الجلسات المستهدفة.</li>
+            <li><strong><code>beef-xss -h</code></strong>: يعرض معلومات المساعدة الخاصة بالأداة، مثل الخيارات المتاحة لاستخدامها بشكل صحيح.</li>
+            <li><strong><code>beef-xss -p [المنفذ]</code></strong>: يستخدم لتحديد المنفذ الذي يعمل عليه الخادم عند تشغيل **BeEF**. بشكل افتراضي، يعمل على المنفذ 3000.</li>
+        </ul>
+
+        <p><strong>أمثلة على كيفية استخدام BeEF:</strong></p>
+        <ul>
+            <li><code>beef-xss</code> - لتشغيل **BeEF** وبدء الخادم الخاص بها على المنفذ الافتراضي 3000.</li>
+            <li><code>beef-xss -p 4000</code> - لتشغيل **BeEF** على المنفذ 4000 بدلاً من المنفذ الافتراضي.</li>
+        </ul>
+
+        <p><strong>كيفية استغلال BeEF للمتصفح:</strong></p>
+        <ul>
+            <li>بمجرد تشغيل **BeEF**، يقوم المهاجم بتوجيه الضحية إلى صفحة ويب تحتوي على نص JavaScript، وهو ما يتيح له الوصول إلى المتصفح المستهدف.</li>
+            <li>بعد أن يفتح الضحية الصفحة، يصبح جهازه متصلاً بـ **BeEF**، ويمكن للمهاجم السيطرة على المتصفح وإجراء هجمات متنوعة مثل سرقة الجلسات أو الوصول إلى الكاميرا والميكروفون.</li>
+            <li>يمكن تنفيذ عدة هجمات عبر **BeEF** مثل استغلال الثغرات في المتصفح، وزرع أكواد خبيثة، وقياس مدى أمان المتصفح ضد الهجمات.</li>
+        </ul>
+
+        <p><strong>أنواع الهجمات التي يمكن تنفيذها باستخدام BeEF:</strong></p>
+        <ul>
+            <li><strong>Steal Cookies:</strong> سرقة ملفات تعريف الارتباط من المتصفح (الكوكيز) للوصول إلى حسابات الضحية عبر الإنترنت.</li>
+            <li><strong>Keylogging:</strong> تسجيل ضربات المفاتيح على المتصفح لجمع كلمات المرور أو أي معلومات حساسة أخرى.</li>
+            <li><strong>Social Engineering:</strong> تنفيذ هجمات الهندسة الاجتماعية عبر المتصفح، مثل التصيد الاحتيالي عبر النوافذ المنبثقة.</li>
+            <li><strong>Browser Exploits:</strong> استغلال الثغرات المعروفة في المتصفحات لتنفيذ أكواد خبيثة.</li>
+            <li><strong>Browser Fingerprinting:</strong> جمع بيانات حول المتصفح المستهدف واستخدامها لتتبع الضحية.</li>
+            <li><strong>Credential Harvesting:</strong> جمع بيانات الاعتماد من مواقع الويب عبر تقنيات التصيد الاحتيالي.</li>
+        </ul>
+
+        <p><strong>ملاحظات مهمة:</strong></p>
+        <ul>
+            <li>تُستخدم **BeEF** فقط في بيئات اختبارية أو مع إذن من الجهات المستهدفة. استخدام الأداة على الأنظمة التي لا تملك إذنًا لاختبارها يُعد غير قانوني.</li>
+            <li>من الأفضل استخدام **BeEF** كجزء من اختبار الأمان الشامل والذي يتضمن أدوات وتقنيات أخرى.</li>
+            <li>يجب تحديث **BeEF** بانتظام للحصول على أحدث الأساليب في استغلال المتصفحات.</li>
+        </ul>
+    </div>
+</div>
+    <!-- نافذة المساعدة -->
+    <div id="helpPopup" class="help-popup">
+        <p>مرحبًا! إذا كنت بحاجة إلى مساعدة أو دعم، يمكنك التواصل معي عبر حسابي على تيليجرام. اضغط على الرابط التالي للمساعدة:</p>
+        <a href="https://t.me/ZER0_ATTACK" class="help-btn" target="_blank">مساعدتي على تيليجرام</a>
+        <button onclick="closeHelpPopup()">إغلاق</button>
+    </div>
+
+    <script>
+        // تفعيل/إخفاء التفاصيل عند الضغط على عنوان الأداة
+        function toggleDetails(tool) {
+            var details = document.getElementById(tool);
+            if (details.style.display === "none" || details.style.display === "") {
+                details.style.display = "block";
+            } else {
+                details.style.display = "none";
+            }
+        }
+
+        // البحث عن الأداة
+        function searchTool() {
+            var input = document.getElementById("searchInput").value.toLowerCase();
+            var tools = document.getElementsByClassName("tool");
+            for (var i = 0; i < tools.length; i++) {
+                var toolTitle = tools[i].getElementsByTagName("h2")[0].innerText.toLowerCase();
+                if (toolTitle.indexOf(input) > -1) {
+                    tools[i].style.display = "";
+                } else {
+                    tools[i].style.display = "none";
+                }
+            }
+        }
+
+        // إظهار نافذة المساعدة عند الضغط على زر المساعدة
+        document.getElementById('helpButton').addEventListener('click', function() {
+            document.getElementById('helpPopup').style.display = 'block';
+        });
+
+        // إغلاق نافذة المساعدة
+        function closeHelpPopup() {
+            document.getElementById('helpPopup').style.display = 'none';
+        }
+
+        // تحويل المستخدم إلى حسابك على تيليجرام عند الضغط على كلمة "Kali Linux Tools"
+        function redirectToTelegram() {
+            var logo = document.getElementById('logo');
+            logo.classList.add('clicked'); // إضافة الكلاس لتغيير اللون
+            setTimeout(function() {
+                window.location.href = "https://t.me/ZER0_ATTACK"; // تحويل المستخدم
+            }, 300); // تأخير بسيط قبل التحويل
+        }
+    </script>
+
+</body>
+</html>
+<!-- حقوق الطبع والنشر في الأسفل -->
+<div class="footer">
+    <p>&copy; <span class="highlight">2024</span> All Rights Reserved. 
+    <span class="brand" onclick="showPopup()">ZERO Attack</span></p>
+</div>
+
+<!-- النافذة المنبثقة -->
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <h3>ما هو ZERO Attack؟</h3>
+        <p>ZERO Attack هو موقع متخصص في توفير أدوات وتقنيات الأمن السيبراني. الهدف هو تمكين المستخدمين من فهم واستخدام الأدوات لاختبار الأمان وحماية الأنظمة بشكل احترافي.</p>
+        <button onclick="closePopup()">إغلاق</button>
+    </div>
+</div>
+
+<style>
+    .footer {
+        background-color: #1e1e1e;
+        color: #ffffff;
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        border-top: 1px solid #333;
+        transition: all 0.5s ease;
+    }
+
+    .footer:hover {
+        background-color: #00d1b2;
+        color: #121212;
+        box-shadow: 0 0 10px #00d1b2;
+        transform: scale(1.02);
+    }
+
+    .footer p {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .highlight {
+        color: #ffcc00;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+
+    .highlight:hover {
+        color: #ff8c00;
+    }
+
+    .brand {
+        color: #00d1b2;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .brand:hover {
+        color: #00ff00;
+        text-decoration: underline;
+    }
+
+    /* تصميم النافذة المنبثقة */
+    .popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .popup-content {
+        background-color: #1e1e1e;
+        color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        max-width: 500px;
+        width: 80%;
+    }
+
+    .popup-content h3 {
+        color: #00d1b2;
+        margin-bottom: 15px;
+    }
+
+    .popup-content button {
+        background-color: #00d1b2;
+        color: #ffffff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+    .popup-content button:hover {
+        background-color: #00ff00;
+    }
+</style>
+
+<script>
+    function showPopup() {
+        document.getElementById('popup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+</script>
